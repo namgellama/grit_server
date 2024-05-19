@@ -46,7 +46,11 @@ const createProduct = asyncHandler(
 				image,
 				price,
 				segment,
-				categoryId,
+				category: {
+					connect: {
+						id: categoryId!,
+					},
+				},
 				stock,
 				sizes,
 			},
