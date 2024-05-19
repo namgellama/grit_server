@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
-import productRoutes from "./routes/productRoutes";
+import authRoutes from "./routes/authRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
+import productRoutes from "./routes/productRoutes";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.get("/", (request: Request, response: Response) => {
 
 app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/auth", authRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
