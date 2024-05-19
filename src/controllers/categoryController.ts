@@ -3,6 +3,16 @@ import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
 
+// @desc Get all categories
+// @route GET /api/categories
+// @access Public
+const getCategories = asyncHandler(
+	async (request: Request, response: Response) => {
+		const categories = await prisma.category.findMany();
+		response.send(categories);
+	}
+);
+
 // @desc Create a category
 // @route POST /api/categories
 // @access Public
@@ -20,4 +30,4 @@ const createCategory = asyncHandler(
 	}
 );
 
-export { createCategory };
+export { getCategories, createCategory };
