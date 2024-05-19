@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
-import asyncHandler from "../middlewares/asyncHandler";
-import prisma from "../../prisma/client";
 import { User } from "@prisma/client";
-import { hashPassword } from "../utils/hashPassword";
+import { Request, Response } from "express";
+import prisma from "../../prisma/client";
+import asyncHandler from "../middlewares/asyncHandler";
+import { hashPassword, verifyPassword } from "../utils/utilites";
 
 const registerUser = asyncHandler(
 	async (request: Request<{}, {}, User>, response: Response) => {
@@ -27,4 +27,20 @@ const registerUser = asyncHandler(
 	}
 );
 
-export { registerUser };
+const loginUser = asyncHandler(
+	async (request: Request<{}, {}, User>, response: Response) => {
+		const { phoneNumber, password } = request.body;
+
+		const user = await prisma.user.findUnique({ where: { phoneNumber } });
+
+		if (!user) return response.status(404).send("User not found");
+
+		const isMatch = await verifyPassword(password, user.password);
+
+		if (!isMatch) return response.status(400).send("Invalid credentials");
+
+		response.json(user);
+	}
+);
+
+export { loginUser, registerUser };
