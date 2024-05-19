@@ -2,7 +2,7 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
-import { hashPassword, verifyPassword } from "../utils/utilites";
+import { generateToken, hashPassword, verifyPassword } from "../utils/utilites";
 
 const registerUser = asyncHandler(
 	async (request: Request<{}, {}, User>, response: Response) => {
@@ -39,7 +39,11 @@ const loginUser = asyncHandler(
 
 		if (!isMatch) return response.status(400).send("Invalid credentials");
 
-		response.json(user);
+		generateToken(response, user.id);
+
+		response.status(200).json({
+			id: user.id,
+		});
 	}
 );
 
