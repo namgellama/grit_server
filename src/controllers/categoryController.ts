@@ -15,7 +15,7 @@ const getCategories = asyncHandler(
 
 // @desc Create a category
 // @route POST /api/categories
-// @access Public
+// @access Private/Admin
 const createCategory = asyncHandler(
 	async (request: Request<{}, {}, Category>, response: Response) => {
 		const { name, image } = request.body;
