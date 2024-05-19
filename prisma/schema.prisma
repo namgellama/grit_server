@@ -34,19 +34,19 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
+  id          String    @id @default(uuid())
+  name        String    @db.VarChar(255)
   color       Json
-  description String?  @db.VarChar(255)
-  image       String   @default("") @db.VarChar(255)
-  price       Int      @default(0)
-  stock       Int      @default(0)
+  description String?   @db.VarChar(255)
+  image       String    @default("") @db.VarChar(255)
+  price       Int       @default(0)
+  stock       Int       @default(0)
   sizes       String[]
-  segment     Segment  @default(UNISEX)
-  category    Category @relation(fields: [categoryId], references: [id])
-  categoryId  String   @default(uuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  segment     Segment   @default(UNISEX)
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId  String?   @default(uuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model User {
