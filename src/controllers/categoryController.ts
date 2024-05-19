@@ -50,7 +50,10 @@ const createCategory = asyncHandler(
 // @route PUT /api/categories/:id
 // @access Private/Admin
 const updateCategory = asyncHandler(
-	async (request: Request, response: Response) => {
+	async (
+		request: Request<{ id: string }, {}, Category>,
+		response: Response
+	) => {
 		const { name, image } = request.body;
 
 		const categoryExist = await prisma.category.findUnique({
