@@ -75,4 +75,63 @@ const createProduct = asyncHandler(
 	}
 );
 
-export { getProducts, getProduct, createProduct };
+// @desc Update a product
+// @route PUT /api/products/:id
+// @access Private/Admin
+const updateProduct = asyncHandler(
+	async (
+		request: Request<{ id: string }, {}, Product>,
+		response: Response
+	) => {
+		const {
+			name,
+			color,
+			description,
+			image,
+			price,
+			segment,
+			categoryId,
+			stock,
+			sizes,
+		} = request.body;
+		const productExist = await prisma.product.findUnique({
+			where: { id: String(request.params.id) },
+		});
+
+		if (!productExist)
+			return response.status(404).send("Product with that Id not found.");
+
+		const categoryExist = await prisma.category.findUnique({
+			where: { id: String(categoryId) },
+		});
+
+		if (!categoryExist)
+			return response
+				.status(404)
+				.send("Category with that Id not found.");
+
+		const products = await prisma.product.update({
+			where: {
+				id: request.params.id,
+			},
+			data: {
+				name,
+				color: JSON.stringify(color),
+				description,
+				image,
+				price,
+				segment,
+				category: {
+					connect: {
+						id: categoryId!,
+					},
+				},
+				stock,
+				sizes,
+			},
+		});
+		response.json(products);
+	}
+);
+
+export { getProducts, getProduct, createProduct, updateProduct };
