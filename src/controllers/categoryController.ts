@@ -17,7 +17,7 @@ const getCategories = asyncHandler(
 // @route GET /api/categories/:id
 // @access Public
 const getCategory = asyncHandler(
-	async (request: Request, response: Response) => {
+	async (request: Request<{ id: string }>, response: Response) => {
 		const category = await prisma.category.findUnique({
 			where: { id: String(request.params.id) },
 		});
@@ -79,4 +79,27 @@ const updateCategory = asyncHandler(
 	}
 );
 
-export { getCategories, getCategory, createCategory, updateCategory };
+// @desc Delete a  category
+// @route DELETE /api/categories/:id
+// @access Private/Admin
+const deleteCategory = asyncHandler(
+	async (request: Request<{ id: string }>, response: Response) => {
+		const category = await prisma.category.findUnique({
+			where: { id: String(request.params.id) },
+		});
+
+		if (!category)
+			return response.status(404).send("Category with that Id not found");
+
+		await prisma.category.delete({ where: { id: request.params.id } });
+		response.sendStatus(204);
+	}
+);
+
+export {
+	getCategories,
+	getCategory,
+	createCategory,
+	updateCategory,
+	deleteCategory,
+};
