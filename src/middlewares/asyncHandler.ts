@@ -1,9 +1,4 @@
-import {
-	NextFunction,
-	Request,
-	RequestHandler,
-	Response,
-} from "express-serve-static-core";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 
 const asyncHandler = (
 	fn: (

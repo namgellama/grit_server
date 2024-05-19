@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express-serve-static-core";
+import { NextFunction, Request, Response } from "express";
 
 const notFound = (request: Request, response: Response, next: NextFunction) => {
 	const error = new Error(`Not Found - ${request.originalUrl}`);
