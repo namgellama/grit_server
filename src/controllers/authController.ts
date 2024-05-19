@@ -33,17 +33,18 @@ const loginUser = asyncHandler(
 
 		const user = await prisma.user.findUnique({ where: { phoneNumber } });
 
-		if (!user) return response.status(404).send("User not found");
-
-		const isMatch = await verifyPassword(password, user.password);
-
-		if (!isMatch) return response.status(400).send("Invalid credentials");
-
-		generateToken(response, user.id);
-
-		response.status(200).json({
-			id: user.id,
-		});
+		if (user && (await verifyPassword(password, user.password))) {
+			generateToken(response, user.id);
+			response.status(200).json({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				role: user.role,
+			});
+		} else {
+			response.status(401);
+			throw new Error("Invalid phone number or password");
+		}
 	}
 );
 
