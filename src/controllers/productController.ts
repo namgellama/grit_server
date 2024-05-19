@@ -13,6 +13,22 @@ const getProducts = asyncHandler(
 	}
 );
 
+// @desc Fetch a single product
+// @route GET /api/products/:id
+// @access Public
+const getProduct = asyncHandler(
+	async (request: Request<{ id: string }>, response: Response) => {
+		const product = await prisma.product.findUnique({
+			where: { id: String(request.params.id) },
+		});
+
+		if (!product)
+			return response.status(404).send("Product with that Id not found.");
+
+		response.json(product);
+	}
+);
+
 // @desc Create a product
 // @route POST /api/products
 // @access Private/Admin
@@ -59,4 +75,4 @@ const createProduct = asyncHandler(
 	}
 );
 
-export { getProducts, createProduct };
+export { getProducts, getProduct, createProduct };
