@@ -134,4 +134,22 @@ const updateProduct = asyncHandler(
 	}
 );
 
-export { getProducts, getProduct, createProduct, updateProduct };
+// @desc Delete a product
+// @route DELETE /api/products/:id
+// @access Private/Admin
+const deleteProduct = asyncHandler(
+	async (request: Request<{ id: string }>, response: Response) => {
+		const product = await prisma.product.findUnique({
+			where: { id: String(request.params.id) },
+		});
+
+		if (!product)
+			return response.status(404).send("Product with that Id not found.");
+
+		await prisma.product.delete({ where: { id: request.params.id } });
+
+		response.sendStatus(204);
+	}
+);
+
+export { getProducts, getProduct, createProduct, updateProduct, deleteProduct };
