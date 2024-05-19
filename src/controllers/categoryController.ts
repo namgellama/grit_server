@@ -9,7 +9,7 @@ import asyncHandler from "../middlewares/asyncHandler";
 const getCategories = asyncHandler(
 	async (request: Request, response: Response) => {
 		const categories = await prisma.category.findMany();
-		response.send(categories);
+		response.status(200).json(categories);
 	}
 );
 
@@ -22,10 +22,11 @@ const getCategory = asyncHandler(
 			where: { id: String(request.params.id) },
 		});
 
-		if (!category)
-			return response.status(404).send("Category with that Id not found");
-
-		response.send(category);
+		if (category) response.status(200).json(category);
+		else {
+			response.status(404);
+			throw new Error("Category not found");
+		}
 	}
 );
 
@@ -56,26 +57,26 @@ const updateCategory = asyncHandler(
 	) => {
 		const { name, image } = request.body;
 
-		const categoryExist = await prisma.category.findUnique({
+		const category = await prisma.category.findUnique({
 			where: { id: request.params.id },
 		});
 
-		if (!categoryExist)
-			return response
-				.status(404)
-				.send("Category with that Id not found.");
+		if (category) {
+			const updatedCategory = await prisma.category.update({
+				where: {
+					id: request.params.id,
+				},
+				data: {
+					name,
+					image,
+				},
+			});
 
-		const updatedCategory = await prisma.category.update({
-			where: {
-				id: request.params.id,
-			},
-			data: {
-				name,
-				image,
-			},
-		});
-
-		response.json(updatedCategory);
+			response.status(200).json(updatedCategory);
+		} else {
+			response.status(404);
+			throw new Error("Category not found");
+		}
 	}
 );
 
@@ -88,11 +89,13 @@ const deleteCategory = asyncHandler(
 			where: { id: String(request.params.id) },
 		});
 
-		if (!category)
-			return response.status(404).send("Category with that Id not found");
-
-		await prisma.category.delete({ where: { id: request.params.id } });
-		response.sendStatus(204);
+		if (category) {
+			await prisma.category.delete({ where: { id: request.params.id } });
+			response.sendStatus(204);
+		} else {
+			response.status(404);
+			throw new Error("Category not found");
+		}
 	}
 );
 

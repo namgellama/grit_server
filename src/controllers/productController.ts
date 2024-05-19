@@ -9,7 +9,7 @@ import { Product } from "@prisma/client";
 const getProducts = asyncHandler(
 	async (request: Request, response: Response) => {
 		const products = await prisma.product.findMany();
-		response.json(products);
+		response.status(200).json(products);
 	}
 );
 
@@ -22,10 +22,11 @@ const getProduct = asyncHandler(
 			where: { id: String(request.params.id) },
 		});
 
-		if (!product)
-			return response.status(404).send("Product with that Id not found.");
-
-		response.json(product);
+		if (product) response.status(200).json(product);
+		else {
+			response.status(404);
+			throw new Error("Product not found");
+		}
 	}
 );
 
@@ -45,33 +46,33 @@ const createProduct = asyncHandler(
 			stock,
 			sizes,
 		} = request.body;
-		const categoryExist = await prisma.category.findUnique({
+		const category = await prisma.category.findUnique({
 			where: { id: String(categoryId) },
 		});
 
-		if (!categoryExist)
-			return response
-				.status(404)
-				.send("Category with that Id not found.");
-
-		const products = await prisma.product.create({
-			data: {
-				name,
-				color: JSON.stringify(color),
-				description,
-				image,
-				price,
-				segment,
-				category: {
-					connect: {
-						id: categoryId!,
+		if (category) {
+			const products = await prisma.product.create({
+				data: {
+					name,
+					color: JSON.stringify(color),
+					description,
+					image,
+					price,
+					segment,
+					category: {
+						connect: {
+							id: categoryId!,
+						},
 					},
+					stock,
+					sizes,
 				},
-				stock,
-				sizes,
-			},
-		});
-		response.json(products);
+			});
+			response.status(201).json(products);
+		} else {
+			response.status(404);
+			throw new Error("Category not found");
+		}
 	}
 );
 
@@ -94,43 +95,39 @@ const updateProduct = asyncHandler(
 			stock,
 			sizes,
 		} = request.body;
-		const productExist = await prisma.product.findUnique({
+		const product = await prisma.product.findUnique({
 			where: { id: String(request.params.id) },
 		});
-
-		if (!productExist)
-			return response.status(404).send("Product with that Id not found.");
-
-		const categoryExist = await prisma.category.findUnique({
+		const category = await prisma.category.findUnique({
 			where: { id: String(categoryId) },
 		});
 
-		if (!categoryExist)
-			return response
-				.status(404)
-				.send("Category with that Id not found.");
-
-		const products = await prisma.product.update({
-			where: {
-				id: request.params.id,
-			},
-			data: {
-				name,
-				color: JSON.stringify(color),
-				description,
-				image,
-				price,
-				segment,
-				category: {
-					connect: {
-						id: categoryId!,
-					},
+		if (product && category) {
+			const product = await prisma.product.update({
+				where: {
+					id: request.params.id,
 				},
-				stock,
-				sizes,
-			},
-		});
-		response.json(products);
+				data: {
+					name,
+					color: JSON.stringify(color),
+					description,
+					image,
+					price,
+					segment,
+					category: {
+						connect: {
+							id: categoryId!,
+						},
+					},
+					stock,
+					sizes,
+				},
+			});
+			response.status(200).json(product);
+		} else {
+			response.status(404);
+			throw new Error("Resource not found");
+		}
 	}
 );
 
@@ -143,12 +140,14 @@ const deleteProduct = asyncHandler(
 			where: { id: String(request.params.id) },
 		});
 
-		if (!product)
-			return response.status(404).send("Product with that Id not found.");
+		if (product) {
+			await prisma.product.delete({ where: { id: request.params.id } });
 
-		await prisma.product.delete({ where: { id: request.params.id } });
-
-		response.sendStatus(204);
+			response.sendStatus(204);
+		} else {
+			response.status(404);
+			throw new Error("Product not found");
+		}
 	}
 );
 

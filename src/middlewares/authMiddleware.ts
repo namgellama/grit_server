@@ -40,7 +40,7 @@ const protect = asyncHandler(
 			next();
 		} catch (error) {
 			response.status(401);
-			throw new Error("Not authorized, token failed");
+			throw new Error("Not authorized, no token");
 		}
 	}
 );

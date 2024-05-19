@@ -8,22 +8,25 @@ const registerUser = asyncHandler(
 	async (request: Request<{}, {}, User>, response: Response) => {
 		const { email, phoneNumber, name, password } = request.body;
 
-		const userExist = await prisma.user.findFirst({
+		const user = await prisma.user.findFirst({
 			where: { OR: [{ email }, { phoneNumber }] },
 		});
 
-		if (userExist) return response.status(400).send("User already exists.");
+		if (user) {
+			const newUser = await prisma.user.create({
+				data: {
+					name,
+					phoneNumber,
+					email,
+					password: await hashPassword(password),
+				},
+			});
 
-		const newUser = await prisma.user.create({
-			data: {
-				name,
-				phoneNumber,
-				email,
-				password: await hashPassword(password),
-			},
-		});
-
-		response.status(201).json(newUser);
+			response.status(201).json(newUser);
+		} else {
+			response.status(400);
+			throw new Error("User already exists.");
+		}
 	}
 );
 
