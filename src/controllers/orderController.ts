@@ -22,6 +22,8 @@ const createOrder = asyncHandler(
 						quantity: orderItem.quantity,
 						unitPrice: orderItem.unitPrice,
 						unitTotalPrice: orderItem.unitTotalPrice,
+						size: orderItem.size,
+						color: orderItem.color,
 					})),
 				},
 				userId: request.user?.id,
