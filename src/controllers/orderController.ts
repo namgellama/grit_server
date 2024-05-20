@@ -20,6 +20,7 @@ const createOrder = asyncHandler(
 					create: orderItems.map((orderItem: OrderItem) => ({
 						productId: orderItem.productId,
 						quantity: orderItem.quantity,
+						unitPrice: orderItem.unitPrice,
 						unitTotalPrice: orderItem.unitTotalPrice,
 					})),
 				},

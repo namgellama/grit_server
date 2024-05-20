@@ -84,6 +84,7 @@ model Address {
 model OrderItem {
   id             String   @id @default(uuid())
   quantity       Int
+  unitPrice      Int      @default(0)
   unitTotalPrice Int
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
