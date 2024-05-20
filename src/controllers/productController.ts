@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
 
-// @desc Fetch all products
+// @desc Get all products
 // @route GET /api/products
 // @access Public
 const getProducts = asyncHandler(
@@ -13,7 +13,7 @@ const getProducts = asyncHandler(
 	}
 );
 
-// @desc Fetch a single product
+// @desc Get a single product
 // @route GET /api/products/:id
 // @access Public
 const getProduct = asyncHandler(

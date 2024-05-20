@@ -9,13 +9,21 @@ interface OrderRequest {
 	address: Address;
 }
 
-// @desc Fetch all orders
+// @desc Get all orders
 // @route GET /api/orders
 // @access Private/Admin
 const getOrders = asyncHandler(async (request: Request, response: Response) => {
 	const orders = await prisma.order.findMany({
 		include: {
-			orderItems: true,
+			orderItems: {
+				include: {
+					product: {
+						select: {
+							name: true,
+						},
+					},
+				},
+			},
 			address: true,
 			user: {
 				select: {
@@ -31,9 +39,36 @@ const getOrders = asyncHandler(async (request: Request, response: Response) => {
 	response.status(200).json(orders);
 });
 
+// @desc Get my orders
+// @route GET /api/orders/mine
+// @access Private
+const getMyOrders = asyncHandler(
+	async (request: Request, response: Response) => {
+		const orders = await prisma.order.findMany({
+			where: {
+				userId: request.user?.id,
+			},
+			include: {
+				orderItems: {
+					include: {
+						product: {
+							select: {
+								name: true,
+							},
+						},
+					},
+				},
+				address: true,
+			},
+		});
+
+		response.status(200).json(orders);
+	}
+);
+
 // @desc Create an order
 // @route POST /api/orders
-// @access Public
+// @access Private
 const createOrder = asyncHandler(
 	async (request: Request<{}, {}, OrderRequest>, response: Response) => {
 		const { orderItems, totalPrice, address } = request.body;
@@ -67,4 +102,4 @@ const createOrder = asyncHandler(
 	}
 );
 
-export { getOrders, createOrder };
+export { getOrders, getMyOrders, createOrder };
