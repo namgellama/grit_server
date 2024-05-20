@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import asyncHandler from "../middlewares/asyncHandler";
-import prisma from "../../prisma/client";
 import { Product } from "@prisma/client";
+import { Request, Response } from "express";
+import prisma from "../../prisma/client";
+import asyncHandler from "../middlewares/asyncHandler";
 
 // @desc Fetch all products
 // @route GET /api/products
@@ -51,7 +51,7 @@ const createProduct = asyncHandler(
 		});
 
 		if (category) {
-			const products = await prisma.product.create({
+			const newProduct = await prisma.product.create({
 				data: {
 					name,
 					color: JSON.stringify(color),
@@ -68,7 +68,7 @@ const createProduct = asyncHandler(
 					sizes,
 				},
 			});
-			response.status(201).json(products);
+			response.status(201).json(newProduct);
 		} else {
 			response.status(404);
 			throw new Error("Category not found");
@@ -151,4 +151,4 @@ const deleteProduct = asyncHandler(
 	}
 );
 
-export { getProducts, getProduct, createProduct, updateProduct, deleteProduct };
+export { createProduct, deleteProduct, getProduct, getProducts, updateProduct };
