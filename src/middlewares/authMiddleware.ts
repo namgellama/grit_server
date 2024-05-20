@@ -10,35 +10,36 @@ interface ExtendedJwtPayload extends JwtPayload {
 // Protect routes
 const protect = asyncHandler(
 	async (request: Request, response: Response, next: NextFunction) => {
-		try {
-			const token = request.cookies.jwt;
+		let token;
+		token = request.cookies.token;
 
-			if (!token) {
-				throw new Error("Not authorized, no token");
+		if (token) {
+			try {
+				const decoded = jwt.verify(
+					token,
+					process.env.JWT_SECRET!
+				) as ExtendedJwtPayload;
+				const user = await prisma.user.findUnique({
+					where: { id: decoded.userId },
+					select: {
+						id: true,
+						email: true,
+						name: true,
+						phoneNumber: true,
+						role: true,
+					},
+				});
+
+				console.log(user);
+
+				request.user = user!;
+				console.log(request.user);
+				next();
+			} catch {
+				response.status(401);
+				throw new Error("Not authorized, token failed");
 			}
-
-			const decoded = jwt.verify(
-				token,
-				process.env.JWT_SECRET!
-			) as ExtendedJwtPayload;
-			const user = await prisma.user.findUnique({
-				where: { id: decoded.userId },
-				select: {
-					id: true,
-					email: true,
-					name: true,
-					phoneNumber: true,
-					role: true,
-				},
-			});
-
-			if (!user) {
-				throw new Error("Not authorized, user not found");
-			}
-
-			request.user = user;
-			next();
-		} catch (error) {
+		} else {
 			response.status(401);
 			throw new Error("Not authorized, no token");
 		}
