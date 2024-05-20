@@ -30,10 +30,7 @@ const protect = asyncHandler(
 					},
 				});
 
-				console.log(user);
-
 				request.user = user!;
-				console.log(request.user);
 				next();
 			} catch {
 				response.status(401);
