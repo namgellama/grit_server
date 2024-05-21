@@ -20,9 +20,6 @@ const getCategory = asyncHandler(
 	async (request: Request<{ id: string }>, response: Response) => {
 		const category = await prisma.category.findUnique({
 			where: { id: String(request.params.id) },
-			include: {
-				products: true,
-			},
 		});
 
 		if (category) response.status(200).json(category);

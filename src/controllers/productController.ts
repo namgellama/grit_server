@@ -7,8 +7,16 @@ import asyncHandler from "../middlewares/asyncHandler";
 // @route GET /api/products
 // @access Public
 const getProducts = asyncHandler(
-	async (request: Request, response: Response) => {
-		const products = await prisma.product.findMany();
+	async (
+		request: Request<{}, {}, {}, { categoryId?: string }>,
+		response: Response
+	) => {
+		const { categoryId } = request.query;
+		const products = await prisma.product.findMany({
+			where: {
+				categoryId,
+			},
+		});
 		response.status(200).json(products);
 	}
 );
