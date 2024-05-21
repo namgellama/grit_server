@@ -43,7 +43,7 @@ model Product {
   id          String   @id @default(uuid())
   name        String   @db.VarChar(255)
   color       Json
-  description String?  @db.VarChar(255)
+  description String   @db.Text
   image       String   @default("") @db.VarChar(255)
   price       Int      @default(0)
   stock       Int      @default(0)
