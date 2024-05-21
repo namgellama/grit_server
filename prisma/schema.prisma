@@ -16,7 +16,6 @@ datasource db {
 enum Segment {
   MEN
   WOMEN
-  UNISEX
 }
 
 enum Role {
@@ -48,7 +47,7 @@ model Product {
   price       Int      @default(0)
   stock       Int      @default(0)
   sizes       String[]
-  segment     Segment  @default(UNISEX)
+  segment     Segment  @default(MEN)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
