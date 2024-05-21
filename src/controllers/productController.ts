@@ -12,12 +12,33 @@ const getProducts = asyncHandler(
 		response: Response
 	) => {
 		const { categoryId } = request.query;
-		const products = await prisma.product.findMany({
+
+		const category = await prisma.category.findUnique({
 			where: {
-				categoryId,
+				id: categoryId,
 			},
 		});
-		response.status(200).json(products);
+
+		if (category) {
+			const products = await prisma.product.findMany({
+				where: {
+					categoryId,
+				},
+				include: {
+					category: {
+						select: {
+							id: true,
+							name: true,
+						},
+					},
+				},
+			});
+
+			response.status(200).json(products);
+		} else {
+			response.status(404);
+			throw new Error("Category not found");
+		}
 	}
 );
 
