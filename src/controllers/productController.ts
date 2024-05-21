@@ -1,4 +1,4 @@
-import { Product } from "@prisma/client";
+import { Prisma, Product } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
@@ -54,7 +54,7 @@ const createProduct = asyncHandler(
 			const newProduct = await prisma.product.create({
 				data: {
 					name,
-					color: JSON.stringify(color),
+					color: color as Prisma.JsonObject,
 					description,
 					image,
 					price,
