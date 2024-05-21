@@ -6,13 +6,20 @@ import authRoutes from "./routes/authRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import productRoutes from "./routes/productRoutes";
+import cors from "cors";
 
 dotenv.config();
 
 const app = express();
+
+let corsOptions = {
+	origin: ["http://localhost:5173"],
+};
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
 
