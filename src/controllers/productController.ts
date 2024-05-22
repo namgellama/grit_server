@@ -23,6 +23,13 @@ const getProducts = asyncHandler(
 			where: {
 				segment,
 			},
+			include: {
+				category: {
+					select: {
+						name: true,
+					},
+				},
+			},
 		});
 
 		response.status(200).json(products);
