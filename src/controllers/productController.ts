@@ -7,38 +7,10 @@ import asyncHandler from "../middlewares/asyncHandler";
 // @route GET /api/products
 // @access Public
 const getProducts = asyncHandler(
-	async (
-		request: Request<{}, {}, {}, { categoryId?: string }>,
-		response: Response
-	) => {
-		const { categoryId } = request.query;
+	async (request: Request, response: Response) => {
+		const products = await prisma.product.findMany();
 
-		const category = await prisma.category.findUnique({
-			where: {
-				id: categoryId,
-			},
-		});
-
-		if (category) {
-			const products = await prisma.product.findMany({
-				where: {
-					categoryId,
-				},
-				include: {
-					category: {
-						select: {
-							id: true,
-							name: true,
-						},
-					},
-				},
-			});
-
-			response.status(200).json(products);
-		} else {
-			response.status(404);
-			throw new Error("Category not found");
-		}
+		response.status(200).json(products);
 	}
 );
 
