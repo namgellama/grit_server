@@ -1,14 +1,29 @@
-import { Prisma, Product } from "@prisma/client";
+import { Prisma, Product, Segment } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
+
+interface SearchParams {
+	segment: Segment;
+}
 
 // @desc Get all products
 // @route GET /api/products
 // @access Public
 const getProducts = asyncHandler(
-	async (request: Request, response: Response) => {
-		const products = await prisma.product.findMany();
+	async (request: Request<{}, {}, {}, SearchParams>, response: Response) => {
+		const { segment: segmentParam } = request.query;
+		const segments = Object.values(Segment);
+
+		const segment = segments.includes(segmentParam)
+			? segmentParam
+			: undefined;
+
+		const products = await prisma.product.findMany({
+			where: {
+				segment,
+			},
+		});
 
 		response.status(200).json(products);
 	}
