@@ -5,6 +5,7 @@ import asyncHandler from "../middlewares/asyncHandler";
 
 interface SearchParams {
 	segment: Segment;
+	new: string;
 }
 
 // @desc Get all products
@@ -12,7 +13,7 @@ interface SearchParams {
 // @access Public
 const getProducts = asyncHandler(
 	async (request: Request<{}, {}, {}, SearchParams>, response: Response) => {
-		const { segment: segmentParam } = request.query;
+		const { new: newParam, segment: segmentParam } = request.query;
 		const segments = Object.values(Segment);
 
 		const segment = segments.includes(segmentParam)
@@ -22,6 +23,7 @@ const getProducts = asyncHandler(
 		const products = await prisma.product.findMany({
 			where: {
 				segment,
+				new: newParam === "true",
 			},
 			include: {
 				category: {
