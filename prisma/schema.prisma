@@ -23,6 +23,16 @@ enum Role {
   Customer
 }
 
+enum AgeStatus {
+  New
+  Old
+}
+
+enum SaleStatus {
+  Normal
+  OnSale
+}
+
 enum AddressType {
   UserAddress
   DeliveryAddress
@@ -39,18 +49,19 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
+  id          String     @id @default(uuid())
+  name        String     @db.VarChar(255)
   color       Json?
-  description String   @db.Text
-  image       String   @default("") @db.VarChar(255)
-  price       Int      @default(0)
-  stock       Int      @default(0)
+  description String     @db.Text
+  image       String     @default("") @db.VarChar(255)
+  price       Int        @default(0)
+  stock       Int        @default(0)
   sizes       String[]
-  segment     Segment  @default(MEN)
-  newArrival  Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  segment     Segment    @default(MEN)
+  ageStatus   AgeStatus  @default(New)
+  saleStatus  SaleStatus @default(Normal)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   category   Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId String?
