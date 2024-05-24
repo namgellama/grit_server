@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Response } from "express";
 import jwt from "jsonwebtoken";
-import ms from "ms";
 
 export const hashPassword = async (password: string) => {
 	const salt = await bcrypt.genSalt(10);

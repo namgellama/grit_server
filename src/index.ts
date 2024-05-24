@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import productRoutes from "./routes/productRoutes";
+import userRoutes from "./routes/userRoutes";
 import cors from "cors";
 
 dotenv.config();
@@ -18,7 +19,6 @@ app.use(cookieParser());
 app.use(
 	cors({
 		origin: ["http://localhost:5173"],
-		credentials: true,
 	})
 );
 
@@ -32,6 +32,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/users", userRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
