@@ -4,6 +4,9 @@ import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
 import { generateToken, hashPassword, verifyPassword } from "../utils/utilites";
 
+// @desc Register user
+// @route POST /api/auth/register
+// @access Public
 const registerUser = asyncHandler(
 	async (request: Request<{}, {}, User>, response: Response) => {
 		const { email, phoneNumber, name, password } = request.body;
@@ -30,6 +33,9 @@ const registerUser = asyncHandler(
 	}
 );
 
+// @desc Login user
+// @route POST /api/auth/login
+// @access Public
 const loginUser = asyncHandler(
 	async (request: Request<{}, {}, User>, response: Response) => {
 		const { phoneNumber, password } = request.body;
@@ -52,4 +58,17 @@ const loginUser = asyncHandler(
 	}
 );
 
-export { loginUser, registerUser };
+// @desc Logout user
+// @route POST /api/auth/logout
+// @access Private
+const logoutUser = asyncHandler(
+	async (request: Request, response: Response) => {
+		response.cookie("token", "", {
+			httpOnly: true,
+			expires: new Date(0),
+		});
+		response.status(200).json({ message: "Logged out successfully" });
+	}
+);
+
+export { loginUser, registerUser, logoutUser };

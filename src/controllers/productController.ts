@@ -17,7 +17,6 @@ const getProducts = asyncHandler(
 			request.query;
 		const segments = Object.values(Segment);
 		const ageStatuses = Object.values(AgeStatus);
-		console.log(segmentParam);
 
 		const segment = segments.find(
 			(segment) => segment.toLowerCase() === segmentParam?.toLowerCase()
