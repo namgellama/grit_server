@@ -44,7 +44,7 @@ const loginUser = asyncHandler(
 
 		if (user && (await verifyPassword(password, user.password))) {
 			const token = generateToken(response, user.id);
-			response.status(200).send(token);
+			response.status(200).json(token);
 		} else {
 			response.status(401);
 			throw new Error("Invalid phone number or password");
