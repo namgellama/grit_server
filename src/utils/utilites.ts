@@ -16,14 +16,7 @@ export const verifyPassword = async (
 };
 
 export const generateToken = (response: Response, userId: string) => {
-	const token = jwt.sign({ userId }, process.env.JWT_SECRET!, {
+	return jwt.sign({ userId }, process.env.JWT_SECRET!, {
 		expiresIn: process.env.JWT_EXPIRY_DATE!,
-	});
-
-	response.cookie("token", token, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV !== "development",
-		sameSite: "none",
-		maxAge: ms(process.env.JWT_EXPIRY_DATE!),
 	});
 };

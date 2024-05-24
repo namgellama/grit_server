@@ -11,7 +11,7 @@ interface ExtendedJwtPayload extends JwtPayload {
 const protect = asyncHandler(
 	async (request: Request, response: Response, next: NextFunction) => {
 		let token;
-		token = request.cookies.token;
+		token = request.headers.authorization?.split(" ")[1];
 
 		if (token) {
 			try {
