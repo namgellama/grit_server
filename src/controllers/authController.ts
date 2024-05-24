@@ -4,6 +4,15 @@ import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
 import { generateToken, hashPassword, verifyPassword } from "../utils/utilites";
 
+interface LoginResponseDTO {
+	id: string;
+	name: string;
+	email?: string;
+	phoneNumber: string;
+	token: string;
+	role: string;
+}
+
 // @desc Register user
 // @route POST /api/auth/register
 // @access Public
@@ -37,14 +46,26 @@ const registerUser = asyncHandler(
 // @route POST /api/auth/login
 // @access Public
 const loginUser = asyncHandler(
-	async (request: Request<{}, {}, User>, response: Response) => {
+	async (
+		request: Request<{}, {}, User>,
+		response: Response<LoginResponseDTO>
+	) => {
 		const { phoneNumber, password } = request.body;
 
 		const user = await prisma.user.findUnique({ where: { phoneNumber } });
 
 		if (user && (await verifyPassword(password, user.password))) {
 			const token = generateToken(response, user.id);
-			response.status(200).json(token);
+			const { id, name, phoneNumber, email, role } = user;
+
+			response.status(200).json({
+				id,
+				name,
+				phoneNumber,
+				email: email ?? "",
+				role,
+				token,
+			});
 		} else {
 			response.status(401);
 			throw new Error("Invalid phone number or password");
