@@ -24,7 +24,7 @@ const registerUser = asyncHandler(
 			where: { OR: [{ email }, { phoneNumber }] },
 		});
 
-		if (user) {
+		if (!user) {
 			const newUser = await prisma.user.create({
 				data: {
 					name,
