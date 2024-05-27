@@ -51,6 +51,13 @@ const getProduct = asyncHandler(
 	async (request: Request<{ id: string }>, response: Response) => {
 		const product = await prisma.product.findUnique({
 			where: { id: String(request.params.id) },
+			include: {
+				category: {
+					select: {
+						name: true,
+					},
+				},
+			},
 		});
 
 		if (product) response.status(200).json(product);
