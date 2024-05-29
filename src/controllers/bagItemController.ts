@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import asyncHandler from "../middlewares/asyncHandler";
-import prisma from "../../prisma/client";
 import { BagItem } from "@prisma/client";
+import { Request, Response } from "express";
+import prisma from "../../prisma/client";
+import asyncHandler from "../middlewares/asyncHandler";
 
 // @desc Get all bagItems of logged in user
 // @route GET /api/bagItems
@@ -31,7 +31,7 @@ const getBagItems = asyncHandler(
 // @access Private
 const createBagItem = asyncHandler(
 	async (request: Request<{}, {}, BagItem>, response: Response) => {
-		const { productId, color, size, unitPrice, unitTotalPrice } =
+		const { productId, color, size, unitPrice, unitTotalPrice, quantity } =
 			request.body;
 		const loggedInUserId = request.user?.id;
 
@@ -42,6 +42,7 @@ const createBagItem = asyncHandler(
 				unitPrice,
 				unitTotalPrice,
 				productId,
+				quantity,
 				userId: loggedInUserId ?? "",
 			},
 		});
@@ -50,4 +51,35 @@ const createBagItem = asyncHandler(
 	}
 );
 
-export { getBagItems, createBagItem };
+// @desc Update a bagItem quanitity
+// @route PATCH /api/bagItems/:id
+// @access Private
+const updateBagItem = asyncHandler(
+	async (
+		request: Request<{ id: string }, {}, BagItem>,
+		response: Response
+	) => {
+		const { quantity } = request.body;
+
+		const bagItem = await prisma.bagItem.findUnique({
+			where: { id: request.params.id },
+		});
+
+		if (bagItem) {
+			const updatedBagItem = await prisma.bagItem.update({
+				where: {
+					id: request.params.id,
+				},
+				data: {
+					quantity,
+				},
+			});
+			response.status(200).json(updatedBagItem);
+		} else {
+			response.status(404);
+			throw new Error("Bag item not found");
+		}
+	}
+);
+
+export { createBagItem, getBagItems, updateBagItem };
