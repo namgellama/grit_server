@@ -99,6 +99,7 @@ model BagItem {
   size           String
   color          String
   unitPrice      Int      @default(0)
+  quantity       Int      @default(0)
   unitTotalPrice Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
