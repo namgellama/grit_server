@@ -3,6 +3,31 @@ import asyncHandler from "../middlewares/asyncHandler";
 import prisma from "../../prisma/client";
 import { BagItem } from "@prisma/client";
 
+// @desc Get all bagItems of logged in user
+// @route GET /api/bagItems
+// @access Private
+const getBagItems = asyncHandler(
+	async (request: Request, response: Response) => {
+		const bagItems = await prisma.bagItem.findMany({
+			where: {
+				userId: request.user?.id,
+			},
+			include: {
+				product: {
+					select: {
+						color: true,
+						stock: true,
+					},
+				},
+			},
+		});
+		response.status(200).json(bagItems);
+	}
+);
+
+// @desc Create a bagItem
+// @route POST /api/bagItems
+// @access Private
 const createBagItem = asyncHandler(
 	async (request: Request<{}, {}, BagItem>, response: Response) => {
 		const { productId, color, size, unitPrice, unitTotalPrice } =
@@ -24,4 +49,4 @@ const createBagItem = asyncHandler(
 	}
 );
 
-export { createBagItem };
+export { getBagItems, createBagItem };

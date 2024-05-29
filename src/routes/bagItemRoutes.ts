@@ -1,9 +1,9 @@
 import express from "express";
-import { createBagItem } from "../controllers/bagItemController";
+import { createBagItem, getBagItems } from "../controllers/bagItemController";
 import { protect } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.route("/").post(protect, createBagItem);
+router.route("/").get(protect, getBagItems).post(protect, createBagItem);
 
 export default router;
