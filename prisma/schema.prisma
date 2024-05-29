@@ -66,6 +66,7 @@ model Product {
   category   Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId String?
   orderItems OrderItem[]
+  bagItems   BagItem[]
 }
 
 model User {
@@ -78,7 +79,8 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  orders Order[]
+  orders   Order[]
+  bagItems BagItem[]
 }
 
 model Address {
@@ -90,6 +92,21 @@ model Address {
 
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String @unique
+}
+
+model BagItem {
+  id             String   @id @default(uuid())
+  size           String
+  color          String
+  unitPrice      Int      @default(0)
+  unitTotalPrice Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
 }
 
 model OrderItem {
