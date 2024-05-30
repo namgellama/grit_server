@@ -21,6 +21,9 @@ const getBagItems = asyncHandler(
 					},
 				},
 			},
+			orderBy: {
+				createdAt: "desc",
+			},
 		});
 		response.status(200).json(bagItems);
 	}
