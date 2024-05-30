@@ -62,7 +62,7 @@ const updateBagItem = asyncHandler(
 		request: Request<{ id: string }, {}, BagItem>,
 		response: Response
 	) => {
-		const { quantity } = request.body;
+		const { quantity, unitTotalPrice } = request.body;
 
 		const bagItem = await prisma.bagItem.findUnique({
 			where: { id: request.params.id },
@@ -75,6 +75,7 @@ const updateBagItem = asyncHandler(
 				},
 				data: {
 					quantity,
+					unitTotalPrice,
 				},
 			});
 			response.status(200).json(updatedBagItem);
