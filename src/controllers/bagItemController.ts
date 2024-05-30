@@ -82,4 +82,22 @@ const updateBagItem = asyncHandler(
 	}
 );
 
-export { createBagItem, getBagItems, updateBagItem };
+const deleteBagItem = asyncHandler(
+	async (request: Request<{ id: string }>, response: Response) => {
+		const bagItem = await prisma.bagItem.findUnique({
+			where: {
+				id: request.params.id,
+			},
+		});
+
+		if (bagItem) {
+			await prisma.bagItem.delete({ where: { id: request.params.id } });
+			response.sendStatus(204);
+		} else {
+			response.status(404);
+			throw new Error("Bag item not found");
+		}
+	}
+);
+
+export { createBagItem, getBagItems, updateBagItem, deleteBagItem };
