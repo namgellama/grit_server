@@ -2,6 +2,7 @@ import express from "express";
 import {
 	createBagItem,
 	deleteBagItem,
+	deleteBagItems,
 	getBagItems,
 	updateBagItem,
 } from "../controllers/bagItemController";
@@ -13,7 +14,7 @@ router
 	.route("/")
 	.get(protect, getBagItems)
 	.post(protect, createBagItem)
-	.delete(protect, deleteBagItem);
+	.delete(protect, deleteBagItems);
 router
 	.route("/:id")
 	.patch(protect, updateBagItem)
