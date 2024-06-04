@@ -9,7 +9,11 @@ import { protect } from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
-router.route("/").get(protect, getBagItems).post(protect, createBagItem);
+router
+	.route("/")
+	.get(protect, getBagItems)
+	.post(protect, createBagItem)
+	.delete(protect, deleteBagItem);
 router
 	.route("/:id")
 	.patch(protect, updateBagItem)

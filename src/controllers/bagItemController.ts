@@ -86,6 +86,9 @@ const updateBagItem = asyncHandler(
 	}
 );
 
+// @desc Delete a bagItem
+// @route DELETE /api/bagItems/:id
+// @access Private
 const deleteBagItem = asyncHandler(
 	async (request: Request<{ id: string }>, response: Response) => {
 		const bagItem = await prisma.bagItem.findUnique({
@@ -104,4 +107,25 @@ const deleteBagItem = asyncHandler(
 	}
 );
 
-export { createBagItem, getBagItems, updateBagItem, deleteBagItem };
+// @desc Delete all bag items
+// @route DELETE /api/bagItems
+// @access Private
+const deleteBagItems = asyncHandler(
+	async (request: Request, response: Response) => {
+		const userId = request.user?.id;
+		await prisma.bagItem.deleteMany({
+			where: {
+				userId,
+			},
+		});
+		response.sendStatus(204);
+	}
+);
+
+export {
+	createBagItem,
+	getBagItems,
+	updateBagItem,
+	deleteBagItem,
+	deleteBagItems,
+};
