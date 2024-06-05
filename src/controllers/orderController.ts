@@ -1,12 +1,13 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middlewares/asyncHandler";
 import prisma from "../../prisma/client";
-import { Address, OrderItem } from "@prisma/client";
+import { Address, OrderItem, Payment } from "@prisma/client";
 
 interface OrderRequest {
 	orderItems: OrderItem[];
 	totalPrice: number;
 	address: Address;
+	payment: Payment;
 }
 
 // @desc Get all orders
@@ -71,7 +72,7 @@ const getMyOrders = asyncHandler(
 // @access Private
 const createOrder = asyncHandler(
 	async (request: Request<{}, {}, OrderRequest>, response: Response) => {
-		const { orderItems, totalPrice, address } = request.body;
+		const { orderItems, totalPrice, address, payment } = request.body;
 
 		const newOrder = await prisma.order.create({
 			data: {
@@ -93,6 +94,16 @@ const createOrder = asyncHandler(
 						addressLine2: address.addressLine2,
 						city: address.city,
 						postalCode: address.postalCode,
+					},
+				},
+				payment: {
+					create: {
+						amount: payment.amount,
+						method: payment.method,
+						status:
+							payment.method === "CASH"
+								? "PENDING"
+								: payment.status,
 					},
 				},
 			},
