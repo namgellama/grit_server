@@ -60,6 +60,7 @@ const getMyOrders = asyncHandler(
 					},
 				},
 				address: true,
+				payment: true,
 			},
 		});
 
