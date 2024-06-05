@@ -68,6 +68,27 @@ const getMyOrders = asyncHandler(
 	}
 );
 
+// @desc Get my order details
+// @route GET /api/orders/mine/:id
+// @access Private
+const getMyOrder = asyncHandler(
+	async (request: Request<{ id: string }>, response: Response) => {
+		const order = await prisma.order.findUnique({
+			where: { id: request.params.id },
+			include: {
+				address: true,
+				payment: true,
+			},
+		});
+
+		if (order) response.status(200).json(order);
+		else {
+			response.status(404);
+			throw new Error("Order not found");
+		}
+	}
+);
+
 // @desc Create an order
 // @route POST /api/orders
 // @access Private
@@ -114,4 +135,4 @@ const createOrder = asyncHandler(
 	}
 );
 
-export { getOrders, getMyOrders, createOrder };
+export { getOrders, getMyOrders, getMyOrder, createOrder };
