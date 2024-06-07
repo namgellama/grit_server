@@ -5,7 +5,9 @@ import { Address, OrderItem, Payment } from "@prisma/client";
 
 interface OrderRequest {
 	orderItems: OrderItem[];
-	totalPrice: number;
+	subTotal: number;
+	deliveryCharge: number;
+	total: number;
 	address: Address;
 	payment: Payment;
 }
@@ -104,11 +106,20 @@ const getMyOrder = asyncHandler(
 // @access Private
 const createOrder = asyncHandler(
 	async (request: Request<{}, {}, OrderRequest>, response: Response) => {
-		const { orderItems, totalPrice, address, payment } = request.body;
+		const {
+			orderItems,
+			subTotal,
+			deliveryCharge,
+			total,
+			address,
+			payment,
+		} = request.body;
 
 		const newOrder = await prisma.order.create({
 			data: {
-				totalPrice,
+				subTotal,
+				deliveryCharge,
+				total,
 				orderItems: {
 					create: orderItems.map((orderItem: OrderItem) => ({
 						productId: orderItem.productId,
