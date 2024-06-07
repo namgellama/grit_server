@@ -78,6 +78,16 @@ const getMyOrder = asyncHandler(
 			include: {
 				address: true,
 				payment: true,
+				orderItems: {
+					include: {
+						product: {
+							select: {
+								name: true,
+								color: true,
+							},
+						},
+					},
+				},
 			},
 		});
 
