@@ -57,6 +57,7 @@ const getMyOrders = asyncHandler(
 						product: {
 							select: {
 								name: true,
+								color: true,
 							},
 						},
 					},
