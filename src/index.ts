@@ -1,14 +1,15 @@
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
+import addressRoutes from "./routes/addressRoutes";
 import authRoutes from "./routes/authRoutes";
+import bagItemRoutes from "./routes/bagItemRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import productRoutes from "./routes/productRoutes";
 import userRoutes from "./routes/userRoutes";
-import bagItemRoutes from "./routes/bagItemRoutes";
-import cors from "cors";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/bagItems", bagItemRoutes);
+app.use("/api/addresses", addressRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
