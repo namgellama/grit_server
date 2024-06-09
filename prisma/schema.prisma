@@ -38,16 +38,6 @@ enum AddressType {
   DeliveryAddress
 }
 
-model Category {
-  id        String   @id @default(uuid())
-  name      String   @db.VarChar(255)
-  image     String   @default("") @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
-}
-
 enum OrderStatus {
   PENDING
   SHIPPED
@@ -65,6 +55,16 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(255)
+  image     String   @default("") @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
 }
 
 model Product {
