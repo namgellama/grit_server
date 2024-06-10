@@ -30,16 +30,7 @@ interface QueryParams {
 const getOrders = asyncHandler(async (request: Request, response: Response) => {
 	const orders = await prisma.order.findMany({
 		include: {
-			orderItems: {
-				include: {
-					product: {
-						select: {
-							name: true,
-						},
-					},
-				},
-			},
-			address: true,
+			payment: true,
 			user: {
 				select: {
 					id: true,
@@ -49,10 +40,45 @@ const getOrders = asyncHandler(async (request: Request, response: Response) => {
 				},
 			},
 		},
+		orderBy: {
+			createdAt: "desc",
+		},
 	});
 
 	response.status(200).json(orders);
 });
+
+// @desc Get order details
+// @route GET /api/orders/:id
+// @access Private/Admin
+const getOrder = asyncHandler(
+	async (request: Request<{ id: string }>, response: Response) => {
+		const order = await prisma.order.findUnique({
+			where: { id: request.params.id },
+			include: {
+				address: true,
+				payment: true,
+				user: true,
+				orderItems: {
+					include: {
+						product: {
+							select: {
+								name: true,
+								color: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		if (order) response.status(200).json(order);
+		else {
+			response.status(404);
+			throw new Error("Order not found");
+		}
+	}
+);
 
 // @desc Get my orders
 // @route GET /api/orders/mine
@@ -178,4 +204,4 @@ const createOrder = asyncHandler(
 	}
 );
 
-export { getOrders, getMyOrders, getMyOrder, createOrder };
+export { getOrders, getOrder, getMyOrders, getMyOrder, createOrder };
