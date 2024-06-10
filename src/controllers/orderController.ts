@@ -1,7 +1,13 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middlewares/asyncHandler";
 import prisma from "../../prisma/client";
-import { Address, OrderItem, Payment } from "@prisma/client";
+import {
+	Address,
+	OrderItem,
+	OrderStatus,
+	Payment,
+	PaymentStatus,
+} from "@prisma/client";
 
 interface OrderRequest {
 	orderItems: OrderItem[];
@@ -10,6 +16,12 @@ interface OrderRequest {
 	total: number;
 	address: Address;
 	payment: Payment;
+}
+
+interface QueryParams {
+	orderStatus?: OrderStatus;
+	paymentStatus?: PaymentStatus;
+	sortOrder?: "asc" | "desc";
 }
 
 // @desc Get all orders
@@ -46,10 +58,16 @@ const getOrders = asyncHandler(async (request: Request, response: Response) => {
 // @route GET /api/orders/mine
 // @access Private
 const getMyOrders = asyncHandler(
-	async (request: Request, response: Response) => {
+	async (request: Request<{}, {}, {}, QueryParams>, response: Response) => {
+		const { orderStatus, paymentStatus, sortOrder } = request.query;
+
 		const orders = await prisma.order.findMany({
 			where: {
 				userId: request.user?.id,
+				status: orderStatus,
+				payment: {
+					status: paymentStatus,
+				},
 			},
 			include: {
 				orderItems: {
@@ -64,6 +82,9 @@ const getMyOrders = asyncHandler(
 				},
 				address: true,
 				payment: true,
+			},
+			orderBy: {
+				createdAt: sortOrder ?? "desc",
 			},
 		});
 
