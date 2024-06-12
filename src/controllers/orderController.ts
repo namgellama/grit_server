@@ -1,6 +1,3 @@
-import { Request, Response } from "express";
-import asyncHandler from "../middlewares/asyncHandler";
-import prisma from "../../prisma/client";
 import {
 	Address,
 	OrderItem,
@@ -8,6 +5,9 @@ import {
 	Payment,
 	PaymentStatus,
 } from "@prisma/client";
+import { Request, Response } from "express";
+import prisma from "../../prisma/client";
+import asyncHandler from "../middlewares/asyncHandler";
 
 interface OrderRequest {
 	orderItems: OrderItem[];
@@ -204,16 +204,15 @@ const createOrder = asyncHandler(
 	}
 );
 
+// @desc Update order status
+// @route PATCH /api/orders/:id
+// @access Private/Admin
 const updateOrder = asyncHandler(
 	async (
-		request: Request<
-			{ id: string },
-			{},
-			{ orderStatus: OrderStatus; paymentStatus: PaymentStatus }
-		>,
+		request: Request<{ id: string }, {}, { status: OrderStatus }>,
 		response: Response
 	) => {
-		const { orderStatus, paymentStatus } = request.body;
+		const { status } = request.body;
 
 		const order = await prisma.order.findUnique({
 			where: {
@@ -227,12 +226,7 @@ const updateOrder = asyncHandler(
 					id: request.params.id,
 				},
 				data: {
-					status: orderStatus,
-					payment: {
-						update: {
-							status: paymentStatus,
-						},
-					},
+					status,
 				},
 			});
 
@@ -245,10 +239,10 @@ const updateOrder = asyncHandler(
 );
 
 export {
-	getOrders,
-	getOrder,
-	getMyOrders,
-	getMyOrder,
 	createOrder,
+	getMyOrder,
+	getMyOrders,
+	getOrder,
+	getOrders,
 	updateOrder,
 };
