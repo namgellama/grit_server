@@ -204,4 +204,51 @@ const createOrder = asyncHandler(
 	}
 );
 
-export { getOrders, getOrder, getMyOrders, getMyOrder, createOrder };
+const updateOrder = asyncHandler(
+	async (
+		request: Request<
+			{ id: string },
+			{},
+			{ orderStatus: OrderStatus; paymentStatus: PaymentStatus }
+		>,
+		response: Response
+	) => {
+		const { orderStatus, paymentStatus } = request.body;
+
+		const order = await prisma.order.findUnique({
+			where: {
+				id: request.params.id,
+			},
+		});
+
+		if (order) {
+			const updatedOrder = await prisma.order.update({
+				where: {
+					id: request.params.id,
+				},
+				data: {
+					status: orderStatus,
+					payment: {
+						update: {
+							status: paymentStatus,
+						},
+					},
+				},
+			});
+
+			response.status(200).json(updatedOrder);
+		} else {
+			response.status(404);
+			throw new Error("Order not found");
+		}
+	}
+);
+
+export {
+	getOrders,
+	getOrder,
+	getMyOrders,
+	getMyOrder,
+	createOrder,
+	updateOrder,
+};
