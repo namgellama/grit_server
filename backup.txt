@@ -1,140 +1,38 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-enum Segment {
-  MEN
-  WOMEN
-  UNISEX
-}
-
-enum Role {
-  Admin
-  Customer
-}
-
-enum AddressType {
-  UserAddress
-  DeliveryAddress
-}
-
-model Category {
-  id        String   @id @default(uuid())
-  name      String   @db.VarChar(255)
-  image     String   @default("") @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  products Product[]
-}
-
-model Product {
-  id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
-  color       Json
-  description String?  @db.VarChar(255)
-  image       String   @default("") @db.VarChar(255)
-  price       Int      @default(0)
-  stock       Int      @default(0)
-  sizes       String[]
-  segment     Segment  @default(UNISEX)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId String?
-  orderItems OrderItem[]
-}
-
-model User {
-  id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
-  email       String?  @unique
-  phoneNumber String   @unique @default("") @db.VarChar(10)
-  password    String
-  role        Role     @default(Customer)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  orders  Order[]
-  address UserAddress?
-}
-
-model Address {
-  id           String      @id @default(uuid())
-  addressLine1 String      @db.VarChar(255)
-  addressLine2 String      @db.VarChar(255)
-  city         String      @db.VarChar(50)
-  postalCode   String?     @db.VarChar(10)
-  type         AddressType
-
-  userAddress     UserAddress?
-  deliveryAddress DeliveryAddress?
-}
-
-model UserAddress {
-  id String @id @default(uuid())
-
-  address   Address @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  addressId String  @unique
-  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String? @unique
-}
-
-model DeliveryAddress {
-  id String @id @default(uuid())
-
-  address   Address @relation(fields: [addressId], references: [id], onDelete: Cascade)
-  addressId String  @unique
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderId   String  @unique
-}
-
-model Customer {
-  id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
-  email       String?  @unique @db.VarChar(255)
-  phoneNumber String   @unique @db.VarChar(10)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  orders Order[]
-}
-
-model OrderItem {
-  id             Int      @id @default(autoincrement())
-  quantity       Int
-  unitTotalPrice Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  order     Order   @relation(fields: [orderId], references: [id])
-  orderId   String
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
-}
-
-model Order {
-  id         String   @id @default(uuid())
-  totalPrice Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  customer   Customer?        @relation(fields: [customerId], references: [id], onDelete: SetNull)
-  customerId String?
-  user       User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
-  userId     String?
-  orderItems OrderItem[]
-  address    DeliveryAddress?
-}
+{
+		"name": "GRIT Polo",
+		"description": "Combine style and performance with the Athleisure Polo Shirt from GRIT. Perfect for both active days and casual outings, this polo is made from premium, moisture-wicking fabric that keeps you cool and comfortable. Its modern, athletic fit and classic design, featuring a ribbed collar and button placket, make it a versatile addition to your wardrobe. Whether you're hitting the gym, running errands, or meeting friends, the Athleisure Polo Shirt delivers effortless style and functionality.",
+		"categoryId": "07d17f9f-f312-4ae1-8221-0e5b71bffb02",
+		"image": "https://underarmour.scene7.com/is/image/Underarmour/V5-1377374-001_FC?rp=standard-0pad%7CpdpMainDesktop&scl=1&fmt=jpg&qlt=85&resMode=sharp2&cache=on%2Con&bgc=F0F0F0&wid=566&hei=708&size=566%2C708",
+		"price": 1200,
+		"segment": "MEN",
+        "variants": [ 
+            {
+             "size": "M",
+             "color": "Black",
+             "hexColor": "#1D1D1D",
+             "stock": 11,
+             "image": "https://underarmour.scene7.com/is/image/Underarmour/V5-1377374-001_FC?rp=standard-0pad%7CpdpMainDesktop&scl=1&fmt=jpg&qlt=85&resMode=sharp2&cache=on%2Con&bgc=F0F0F0&wid=566&hei=708&size=566%2C708"
+            },
+            {
+             "size": "M",
+             "color": "Gray",
+             "hexColor": "#E5E2E5",
+             "stock": 8,
+             "image": "https://underarmour.scene7.com/is/image/Underarmour/V5-1377377-014_FC?rp=standard-0pad%7CpdpMainDesktop&scl=1&fmt=jpg&qlt=85&resMode=sharp2&cache=on%2Con&bgc=F0F0F0&wid=566&hei=708&size=566%2C708"
+            },
+            {
+             "size": "L",
+             "color": "Black",
+             "hexColor": "#1D1D1D",
+             "stock": 12,
+             "image": "https://underarmour.scene7.com/is/image/Underarmour/V5-1377374-001_FC?rp=standard-0pad%7CpdpMainDesktop&scl=1&fmt=jpg&qlt=85&resMode=sharp2&cache=on%2Con&bgc=F0F0F0&wid=566&hei=708&size=566%2C708"
+            },
+            {
+             "size": "L",
+             "color": "Gray",
+             "hexColor": "#E5E2E5",
+             "stock": 8,
+             "image": "https://underarmour.scene7.com/is/image/Underarmour/V5-1377377-014_FC?rp=standard-0pad%7CpdpMainDesktop&scl=1&fmt=jpg&qlt=85&resMode=sharp2&cache=on%2Con&bgc=F0F0F0&wid=566&hei=708&size=566%2C708"
+            }
+        ]
+	}
