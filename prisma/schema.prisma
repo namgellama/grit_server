@@ -70,12 +70,9 @@ model Category {
 model Product {
   id          String     @id @default(uuid())
   name        String     @db.VarChar(255)
-  color       Json?
   description String     @db.Text
   image       String     @default("") @db.VarChar(255)
   price       Int        @default(0)
-  stock       Int        @default(0)
-  sizes       String[]
   segment     Segment    @default(MEN)
   ageStatus   AgeStatus  @default(New)
   saleStatus  SaleStatus @default(Normal)
@@ -86,6 +83,19 @@ model Product {
   categoryId String?
   orderItems OrderItem[]
   bagItems   BagItem[]
+  variants   Variant[]
+}
+
+model Variant {
+  id       String @id @default(uuid())
+  size     String
+  color    String
+  hexColor String
+  stock    Int
+  image    String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
 }
 
 model User {

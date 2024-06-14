@@ -1,7 +1,11 @@
-import { AgeStatus, Prisma, Product, Segment } from "@prisma/client";
+import { AgeStatus, Prisma, Product, Segment, Variant } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
+
+interface ProductRequestDTO extends Product {
+	variants: Variant[];
+}
 
 interface SearchParams {
 	segment?: Segment;
@@ -37,6 +41,7 @@ const getProducts = asyncHandler(
 						name: true,
 					},
 				},
+				variants: true,
 			},
 		});
 
@@ -57,6 +62,7 @@ const getProduct = asyncHandler(
 						name: true,
 					},
 				},
+				variants: true,
 			},
 		});
 
@@ -72,7 +78,7 @@ const getProduct = asyncHandler(
 // @route POST /api/products
 // @access Private/Admin
 const createProduct = asyncHandler(
-	async (request: Request<{}, {}, Product>, response: Response) => {
+	async (request: Request<{}, {}, ProductRequestDTO>, response: Response) => {
 		const {
 			name,
 			color,
@@ -83,6 +89,7 @@ const createProduct = asyncHandler(
 			categoryId,
 			stock,
 			sizes,
+			variants,
 		} = request.body;
 		const category = await prisma.category.findUnique({
 			where: { id: String(categoryId) },
@@ -104,6 +111,11 @@ const createProduct = asyncHandler(
 					},
 					stock,
 					sizes,
+					variants: {
+						createMany: {
+							data: variants.map((variant) => variant),
+						},
+					},
 				},
 			});
 			response.status(201).json(newProduct);
