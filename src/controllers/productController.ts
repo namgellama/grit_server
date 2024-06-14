@@ -81,14 +81,11 @@ const createProduct = asyncHandler(
 	async (request: Request<{}, {}, ProductRequestDTO>, response: Response) => {
 		const {
 			name,
-			color,
 			description,
 			image,
 			price,
 			segment,
 			categoryId,
-			stock,
-			sizes,
 			variants,
 		} = request.body;
 		const category = await prisma.category.findUnique({
@@ -99,7 +96,6 @@ const createProduct = asyncHandler(
 			const newProduct = await prisma.product.create({
 				data: {
 					name,
-					color: color as Prisma.JsonObject,
 					description,
 					image,
 					price,
@@ -109,8 +105,6 @@ const createProduct = asyncHandler(
 							id: categoryId!,
 						},
 					},
-					stock,
-					sizes,
 					variants: {
 						createMany: {
 							data: variants.map((variant) => variant),
@@ -134,17 +128,8 @@ const updateProduct = asyncHandler(
 		request: Request<{ id: string }, {}, Product>,
 		response: Response
 	) => {
-		const {
-			name,
-			color,
-			description,
-			image,
-			price,
-			segment,
-			categoryId,
-			stock,
-			sizes,
-		} = request.body;
+		const { name, description, image, price, segment, categoryId } =
+			request.body;
 		const product = await prisma.product.findUnique({
 			where: { id: String(request.params.id) },
 		});
@@ -159,7 +144,6 @@ const updateProduct = asyncHandler(
 				},
 				data: {
 					name,
-					color: JSON.stringify(color),
 					description,
 					image,
 					price,
@@ -169,8 +153,6 @@ const updateProduct = asyncHandler(
 							id: categoryId!,
 						},
 					},
-					stock,
-					sizes,
 				},
 			});
 			response.status(200).json(product);
