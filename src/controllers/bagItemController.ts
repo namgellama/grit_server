@@ -16,8 +16,6 @@ const getBagItems = asyncHandler(
 				product: {
 					select: {
 						name: true,
-						color: true,
-						stock: true,
 					},
 				},
 			},
