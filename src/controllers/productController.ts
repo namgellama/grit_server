@@ -1,4 +1,4 @@
-import { AgeStatus, Prisma, Product, Segment, Variant } from "@prisma/client";
+import { Product, Segment, Variant } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
@@ -9,7 +9,7 @@ interface ProductRequestDTO extends Product {
 
 interface SearchParams {
 	segment?: Segment;
-	ageStatus?: AgeStatus;
+	isNew?: boolean;
 }
 
 // @desc Get all products
@@ -17,23 +17,17 @@ interface SearchParams {
 // @access Public
 const getProducts = asyncHandler(
 	async (request: Request<{}, {}, {}, SearchParams>, response: Response) => {
-		const { ageStatus: ageStatusParam, segment: segmentParam } =
-			request.query;
+		const { segment: segmentParam, isNew } = request.query;
 		const segments = Object.values(Segment);
-		const ageStatuses = Object.values(AgeStatus);
 
 		const segment = segments.find(
 			(segment) => segment.toLowerCase() === segmentParam?.toLowerCase()
 		);
 
-		const ageStatus = ageStatuses.find(
-			(x) => x.toLowerCase() === ageStatusParam?.toLowerCase()
-		);
-
 		const products = await prisma.product.findMany({
 			where: {
 				segment,
-				ageStatus,
+				isNew,
 			},
 			include: {
 				category: {
