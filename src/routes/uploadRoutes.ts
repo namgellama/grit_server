@@ -1,12 +1,24 @@
 import path from "path";
 import multer, { FileFilterCallback } from "multer";
-import express, { Request, Response } from "express";
+import express, { request, Request, Response } from "express";
+import fs from "fs";
+import { promisify } from "util";
 
 const router = express.Router();
 
+const mkdir = promisify(fs.mkdir);
+const access = promisify(fs.access);
+
 const storage = multer.diskStorage({
-	destination: function (request, file, cb) {
-		cb(null, "uploads");
+	destination: async function (request, file, cb) {
+		const uploadPath = path.join(__dirname, "../../uploads");
+		try {
+			await access(uploadPath, fs.constants.F_OK);
+		} catch (err) {
+			await mkdir(uploadPath, { recursive: true });
+		}
+
+		cb(null, uploadPath);
 	},
 	filename: function (request, file, cb) {
 		cb(

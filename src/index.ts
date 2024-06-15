@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
+import path from "path";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
 import addressRoutes from "./routes/addressRoutes";
 import authRoutes from "./routes/authRoutes";
@@ -25,6 +26,7 @@ app.use(
 		origin: ["http://localhost:5173"],
 	})
 );
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.get("/", (request: Request, response: Response) => {
 	response.send("Welcome to Grit server");
