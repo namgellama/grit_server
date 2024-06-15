@@ -10,6 +10,7 @@ import categoryRoutes from "./routes/categoryRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import productRoutes from "./routes/productRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
@@ -25,8 +26,6 @@ app.use(
 	})
 );
 
-const PORT = process.env.PORT || 8000;
-
 app.get("/", (request: Request, response: Response) => {
 	response.send("Welcome to Grit server");
 });
@@ -39,9 +38,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/bagItems", bagItemRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
+
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
 	console.log(`Listening on Port ${PORT}`);
