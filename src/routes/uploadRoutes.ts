@@ -1,8 +1,9 @@
-import path from "path";
-import multer, { FileFilterCallback } from "multer";
-import express, { request, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import fs from "fs";
+import multer, { FileFilterCallback } from "multer";
+import path from "path";
 import { promisify } from "util";
+import cloudinary from "../utils/cloudinary";
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ const storage = multer.diskStorage({
 			await mkdir(uploadPath, { recursive: true });
 		}
 
-		cb(null, uploadPath);
+		cb(null, "./uploads/");
 	},
 	filename: function (request, file, cb) {
 		cb(
@@ -51,17 +52,47 @@ function fileFilter(
 const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single("image");
 
-router.post("/", (request: Request, response: Response) => {
-	uploadSingleImage(request, response, function (err) {
-		if (err) {
-			return response.status(400).send({ message: err.message });
-		}
+router.post("/", uploadSingleImage, (request: Request, response: Response) => {
+	if (request.file)
+		cloudinary.uploader.upload(
+			request?.file?.path,
+			{
+				folder: process.env.FOLDER_NAME,
+			},
+			function (err, result) {
+				if (err) {
+					return response.status(400).send({ message: err.message });
+				}
 
-		response.status(200).send({
-			message: "Image uploaded successfully",
-			image: `/${request?.file?.path}`,
-		});
-	});
+				response.status(200).send({
+					message: "Image uploaded successfully",
+					image: result,
+				});
+			}
+		);
 });
+
+// router.post(
+// 	"/",
+// 	asyncHandler(async (request: Request, response: Response) => {
+// 		if (request.file)
+// 			try {
+// 				console.log(request.file.path);
+// 				const result = await cloudinary.uploader.upload(
+// 					request?.file?.path,
+// 					{
+// 						folder: process.env.FOLDER_NAME,
+// 					}
+// 				);
+
+// 				response.status(200).send({
+// 					message: "Image uploaded successfully",
+// 					image: result,
+// 				});
+// 			} catch (error: any) {
+// 				return response.status(400).send({ message: error.message });
+// 			}
+// 	})
+// );
 
 export default router;
