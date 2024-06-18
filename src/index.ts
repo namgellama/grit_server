@@ -13,6 +13,7 @@ import paymentRoutes from "./routes/paymentRoutes";
 import productRoutes from "./routes/productRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 import userRoutes from "./routes/userRoutes";
+import fileUpload from "express-fileupload";
 
 dotenv.config();
 
@@ -26,6 +27,13 @@ app.use(
 		origin: ["http://localhost:5173"],
 	})
 );
+app.use(
+	fileUpload({
+		useTempFiles: true,
+		tempFileDir: "/tmp/",
+	})
+);
+
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.get("/", (request: Request, response: Response) => {
