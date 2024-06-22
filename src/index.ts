@@ -13,6 +13,7 @@ import paymentRoutes from "./routes/paymentRoutes";
 import productRoutes from "./routes/productRoutes";
 import uploadRoutes from "./routes/uploadRoutes";
 import userRoutes from "./routes/userRoutes";
+import dashboardRoutes from "./routes/dashboardRoutes";
 import fileUpload from "express-fileupload";
 
 dotenv.config();
@@ -49,6 +50,7 @@ app.use("/api/bagItems", bagItemRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
