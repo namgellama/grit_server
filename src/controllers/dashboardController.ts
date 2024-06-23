@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
-import json from "../utils/json";
 
 interface Revenue {
 	month: string;
 	revenue: string;
+}
+interface Product {
+	id: string;
+	name: string;
+	quantity: string;
+	amount: string;
 }
 
 // @desc Get KPI data
@@ -51,7 +56,7 @@ const getKPIData = asyncHandler(
 // @access Private/Admin
 const getRevenueByMonth = asyncHandler(
 	async (request: Request, response: Response) => {
-		const reveneuesData: Revenue[] = await prisma.$queryRaw`
+		const revenuesData: Revenue[] = await prisma.$queryRaw`
 			SELECT 
 			TO_CHAR(DATE_TRUNC('month', "updatedAt"), 'Mon') AS month, 
 			SUM("amount") AS "revenue"
@@ -66,14 +71,14 @@ const getRevenueByMonth = asyncHandler(
 			DATE_TRUNC('month', "updatedAt");
 		`;
 
-		const reveneues = reveneuesData.map(({ month, revenue }) => {
+		const revenues = revenuesData.map(({ month, revenue }) => {
 			return {
 				month,
 				revenue: Number(revenue),
 			};
 		});
 
-		response.status(200).json(reveneues);
+		response.status(200).json(revenues);
 	}
 );
 
@@ -82,19 +87,28 @@ const getRevenueByMonth = asyncHandler(
 // @access Private/Admin
 const getTop5MostSoldProduct = asyncHandler(
 	async (request: Request, response: Response) => {
-		const result = await prisma.$queryRaw`
+		const productsData: Product[] = await prisma.$queryRaw`
 			SELECT 
-			p.id, p.name, COUNT(oi.quantity) 
+			p.id, p.name, COUNT(oi.quantity) "quantity", p.price * COUNT(oi.quantity) "amount"
 			FROM "Product" p 
 			JOIN "OrderItem" oi 
 			ON p.id = oi."productId" 
 			GROUP BY p.id 
-			ORDER BY count DESC
+			ORDER BY quantity DESC
 			LIMIT 5 ;
         `;
 
-		response.status(200).send(json(result));
+		const products = productsData.map(({ id, name, quantity, amount }) => {
+			return {
+				id,
+				name,
+				quantity: Number(quantity),
+				amount: Number(amount),
+			};
+		});
+
+		response.status(200).json(products);
 	}
 );
 
-export { getKPIData, getTop5MostSoldProduct, getRevenueByMonth };
+export { getKPIData, getRevenueByMonth, getTop5MostSoldProduct };
