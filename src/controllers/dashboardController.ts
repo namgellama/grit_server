@@ -85,7 +85,7 @@ const getRevenueByMonth = asyncHandler(
 // @desc Get top 5 most sold product
 // @route GET /api/dashboard/mostSold
 // @access Private/Admin
-const getTop5MostSoldProduct = asyncHandler(
+const getMostSoldProducts = asyncHandler(
 	async (request: Request, response: Response) => {
 		const productsData: Product[] = await prisma.$queryRaw`
 			SELECT 
@@ -95,7 +95,7 @@ const getTop5MostSoldProduct = asyncHandler(
 			ON p.id = oi."productId" 
 			GROUP BY p.id 
 			ORDER BY quantity DESC
-			LIMIT 5 ;
+			LIMIT 3;
         `;
 
 		const products = productsData.map(({ id, name, quantity, amount }) => {
@@ -111,4 +111,4 @@ const getTop5MostSoldProduct = asyncHandler(
 	}
 );
 
-export { getKPIData, getRevenueByMonth, getTop5MostSoldProduct };
+export { getKPIData, getRevenueByMonth, getMostSoldProducts };
