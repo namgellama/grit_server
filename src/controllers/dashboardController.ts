@@ -3,48 +3,17 @@ import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
 import json from "../utils/json";
 
-// @desc Get revenue
-// @route GET /api/dashboard/revenue
+interface Revenue {
+	month: string;
+	revenue: string;
+}
+
+// @desc Get KPI data
+// @route GET /api/dashboard/kpi
 // @access Private/Admin
-const getRevenue = asyncHandler(
+const getKPIData = asyncHandler(
 	async (request: Request, response: Response) => {
-		const revenue = await prisma.payment.aggregate({
-			_sum: {
-				amount: true,
-			},
-			where: {
-				status: "COMPLETED",
-			},
-		});
-
-		response.status(200).json(revenue);
-	}
-);
-
-// @desc Get orders count
-// @route GET /api/dashboard/ordersCount
-// @access Private/Admin
-const getOrdersCount = asyncHandler(
-	async (request: Request, response: Response) => {
-		const orderCount = await prisma.order.aggregate({
-			_count: true,
-			where: {
-				status: {
-					not: "CANCELLED",
-				},
-			},
-		});
-
-		response.status(200).json(orderCount);
-	}
-);
-
-// @desc Get average order value
-// @route GET /api/dashboard/averageOrderValue
-// @access Private/Admin
-const getAverageOrderValue = asyncHandler(
-	async (request: Request, response: Response) => {
-		const totalRevenueData = await prisma.payment.aggregate({
+		const revenueData = await prisma.payment.aggregate({
 			_sum: {
 				amount: true,
 			},
@@ -62,15 +31,14 @@ const getAverageOrderValue = asyncHandler(
 			},
 		});
 
-		const totalRevenue = totalRevenueData._sum.amount || 0;
-		const totalOrders = orderCountData._count;
+		const revenue = revenueData._sum.amount || 0;
+		const orderCount = orderCountData._count;
 
-		const averageOrderValue =
-			totalOrders > 0 ? totalRevenue / totalOrders : 0;
+		const averageOrderValue = orderCount > 0 ? revenue / orderCount : 0;
 
 		const responseData = {
-			totalRevenue,
-			totalOrders,
+			revenue,
+			orderCount,
 			averageOrderValue,
 		};
 
@@ -83,10 +51,10 @@ const getAverageOrderValue = asyncHandler(
 // @access Private/Admin
 const getRevenueByMonth = asyncHandler(
 	async (request: Request, response: Response) => {
-		const reveneues = await prisma.$queryRaw`
+		const reveneuesData: Revenue[] = await prisma.$queryRaw`
 			SELECT 
 			TO_CHAR(DATE_TRUNC('month', "updatedAt"), 'Mon') AS month, 
-			SUM("amount") "totalAmount"
+			SUM("amount") AS "revenue"
 			FROM 
 			"Payment"
 			WHERE 
@@ -98,7 +66,14 @@ const getRevenueByMonth = asyncHandler(
 			DATE_TRUNC('month', "updatedAt");
 		`;
 
-		response.status(200).send(json(reveneues));
+		const reveneues = reveneuesData.map(({ month, revenue }) => {
+			return {
+				month,
+				revenue: Number(revenue),
+			};
+		});
+
+		response.status(200).json(reveneues);
 	}
 );
 
@@ -122,10 +97,4 @@ const getTop5MostSoldProduct = asyncHandler(
 	}
 );
 
-export {
-	getAverageOrderValue,
-	getOrdersCount,
-	getRevenue,
-	getTop5MostSoldProduct,
-	getRevenueByMonth,
-};
+export { getKPIData, getTop5MostSoldProduct, getRevenueByMonth };
