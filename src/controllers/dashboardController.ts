@@ -9,8 +9,7 @@ interface Revenue {
 interface Product {
 	id: string;
 	name: string;
-	quantity: string;
-	amount: string;
+	count: string;
 }
 
 // @desc Get KPI data
@@ -98,16 +97,15 @@ const getTop5MostSoldProduct = asyncHandler(
 			LIMIT 5 ;
         `;
 
-		const products = productsData.map(({ id, name, quantity, amount }) => {
+		const reveneues = productsData.map(({ id, name, count }) => {
 			return {
 				id,
 				name,
-				quantity: Number(quantity),
-				amount: Number(amount),
+				revenue: Number(count),
 			};
 		});
 
-		response.status(200).json(products);
+		response.status(200).json(reveneues);
 	}
 );
 
