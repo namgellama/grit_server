@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
-import json from "../utils/json";
 
 interface Revenue {
 	month: string;
 	revenue: string;
+}
+interface Product {
+	id: string;
+	name: string;
+	count: string;
 }
 
 // @desc Get KPI data
@@ -82,7 +86,7 @@ const getRevenueByMonth = asyncHandler(
 // @access Private/Admin
 const getTop5MostSoldProduct = asyncHandler(
 	async (request: Request, response: Response) => {
-		const result = await prisma.$queryRaw`
+		const productsData: Product[] = await prisma.$queryRaw`
 			SELECT 
 			p.id, p.name, COUNT(oi.quantity) 
 			FROM "Product" p 
@@ -93,8 +97,16 @@ const getTop5MostSoldProduct = asyncHandler(
 			LIMIT 5 ;
         `;
 
-		response.status(200).send(json(result));
+		const reveneues = productsData.map(({ id, name, count }) => {
+			return {
+				id,
+				name,
+				revenue: Number(count),
+			};
+		});
+
+		response.status(200).json(reveneues);
 	}
 );
 
-export { getKPIData, getTop5MostSoldProduct, getRevenueByMonth };
+export { getKPIData, getRevenueByMonth, getTop5MostSoldProduct };
