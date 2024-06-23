@@ -2,7 +2,11 @@ import { User } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
-import { generateToken, hashPassword, verifyPassword } from "../utils/utilites";
+import {
+	generateToken,
+	hashPassword,
+	verifyPassword,
+} from "../utils/authUtilites";
 
 interface LoginResponseDTO {
 	id: string;
