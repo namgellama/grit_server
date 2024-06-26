@@ -1,11 +1,8 @@
-import { Product, Segment, Variant } from "@prisma/client";
+import { Product, Segment } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
-
-interface ProductRequestDTO extends Product {
-	variants: Variant[];
-}
+import { ProductRequestDTO } from "../types/product";
 
 interface SearchParams {
 	segment?: Segment;
@@ -35,7 +32,7 @@ const getProducts = asyncHandler(
 						name: true,
 					},
 				},
-				variants: true,
+				// variants: true,
 			},
 		});
 
@@ -56,7 +53,7 @@ const getProduct = asyncHandler(
 						name: true,
 					},
 				},
-				variants: true,
+				// variants: true,
 			},
 		});
 
@@ -79,8 +76,10 @@ const createProduct = asyncHandler(
 			image,
 			price,
 			segment,
+			colors,
+			isNew,
+			onSale,
 			categoryId,
-			variants,
 		} = request.body;
 		const category = await prisma.category.findUnique({
 			where: { id: String(categoryId) },
@@ -94,14 +93,32 @@ const createProduct = asyncHandler(
 					image,
 					price,
 					segment,
+					isNew,
+					onSale,
 					category: {
 						connect: {
 							id: categoryId!,
 						},
 					},
-					variants: {
-						createMany: {
-							data: variants.map((variant) => variant),
+
+					colors: {
+						create: colors.map((color) => ({
+							color: color.color,
+							hexColor: color.hexColor,
+							image: color.image,
+							sizes: {
+								create: color.sizes.map((size) => ({
+									size: size.size,
+									stock: size.stock,
+								})),
+							},
+						})),
+					},
+				},
+				include: {
+					colors: {
+						include: {
+							sizes: true,
 						},
 					},
 				},

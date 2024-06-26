@@ -23,7 +23,7 @@ const getCategory = asyncHandler(
 			include: {
 				products: {
 					include: {
-						variants: true,
+						// variants: true,
 					},
 				},
 			},

@@ -58,34 +58,41 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
-  description String   @db.Text
-  image       String   @default("") @db.VarChar(255)
-  price       Int      @default(0)
-  segment     Segment  @default(MEN)
-  isNew       Boolean  @default(true)
-  onSale      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String      @id @default(uuid())
+  name        String      @db.VarChar(255)
+  description String      @db.Text
+  image       String      @default("") @db.VarChar(255)
+  price       Int         @default(0)
+  segment     Segment     @default(MEN)
+  isNew       Boolean     @default(true)
+  onSale      Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+  bagItems    BagItem[]
+  colors      Color[]
+  categoryId  String?
 
-  category   Category?   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  categoryId String?
-  orderItems OrderItem[]
-  bagItems   BagItem[]
-  variants   Variant[]
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
-model Variant {
-  id       String @id @default(uuid())
-  size     String
-  color    String
-  hexColor String
-  stock    Int
-  image    String
-
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+model Color {
+  id        String @id @default(uuid())
+  color     String
+  hexColor  String
+  image     String
   productId String
+  sizes     Size[]
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Size {
+  id      String @id @default(uuid())
+  size    String
+  stock   Int
+  colorId String
+  color   Color  @relation(fields: [colorId], references: [id])
 }
 
 model User {

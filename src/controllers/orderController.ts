@@ -64,7 +64,7 @@ const getOrder = asyncHandler(
 						product: {
 							select: {
 								name: true,
-								variants: true,
+								// variants: true,
 							},
 						},
 					},
@@ -101,7 +101,7 @@ const getMyOrders = asyncHandler(
 						product: {
 							select: {
 								name: true,
-								variants: true,
+								// variants: true,
 							},
 						},
 					},
@@ -133,7 +133,7 @@ const getMyOrder = asyncHandler(
 						product: {
 							select: {
 								name: true,
-								variants: true,
+								// variants: true,
 							},
 						},
 					},
