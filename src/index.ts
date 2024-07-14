@@ -2,19 +2,16 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
-import path from "path";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
 import addressRoutes from "./routes/addressRoutes";
 import authRoutes from "./routes/authRoutes";
 import bagItemRoutes from "./routes/bagItemRoutes";
 import categoryRoutes from "./routes/categoryRoutes";
+import dashboardRoutes from "./routes/dashboardRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import productRoutes from "./routes/productRoutes";
-import uploadRoutes from "./routes/uploadRoutes";
 import userRoutes from "./routes/userRoutes";
-import dashboardRoutes from "./routes/dashboardRoutes";
-import fileUpload from "express-fileupload";
 
 dotenv.config();
 
@@ -28,14 +25,6 @@ app.use(
 		origin: ["http://localhost:5173"],
 	})
 );
-app.use(
-	fileUpload({
-		useTempFiles: true,
-		tempFileDir: "/tmp/",
-	})
-);
-
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.get("/", (request: Request, response: Response) => {
 	response.send("Welcome to Grit server");
@@ -49,7 +38,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/bagItems", bagItemRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/upload", uploadRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 app.use(notFound);
