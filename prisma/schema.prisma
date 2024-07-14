@@ -16,6 +16,7 @@ datasource db {
 enum Segment {
   MEN
   WOMEN
+  UNISEX
 }
 
 enum Role {
@@ -58,41 +59,33 @@ model Category {
 }
 
 model Product {
-  id          String      @id @default(uuid())
-  name        String      @db.VarChar(255)
-  description String      @db.Text
-  image       String      @default("") @db.VarChar(255)
-  price       Int         @default(0)
-  segment     Segment     @default(MEN)
-  isNew       Boolean     @default(true)
-  onSale      Boolean     @default(false)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
-  bagItems    BagItem[]
-  colors      Color[]
-  categoryId  String?
+  id           String      @id @default(uuid())
+  name         String      @db.VarChar(255)
+  description  String      @db.Text
+  sellingPrice Int         @default(0)
+  crossedPrice Int         @default(0)
+  costPerItem  Int         @default(0)
+  segment      Segment     @default(MEN)
+  isNew        Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  categoryId   String
+  orderItems   OrderItem[]
+  bagItems     BagItem[]
+  variants     Variant[]
 
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
-model Color {
+model Variant {
   id        String @id @default(uuid())
   color     String
-  hexColor  String
+  size      String
   image     String
+  stock     Int    @default(10)
   productId String
-  sizes     Size[]
 
-  product Product @relation(fields: [productId], references: [id])
-}
-
-model Size {
-  id      String @id @default(uuid())
-  size    String
-  stock   Int
-  colorId String
-  color   Color  @relation(fields: [colorId], references: [id])
+  Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model User {
