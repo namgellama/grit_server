@@ -32,7 +32,7 @@ const getProducts = asyncHandler(
 						name: true,
 					},
 				},
-				// variants: true,
+				variants: true,
 			},
 		});
 
@@ -53,7 +53,7 @@ const getProduct = asyncHandler(
 						name: true,
 					},
 				},
-				// variants: true,
+				variants: true,
 			},
 		});
 
@@ -73,13 +73,13 @@ const createProduct = asyncHandler(
 		const {
 			name,
 			description,
-			image,
-			price,
+			sellingPrice,
+			crossedPrice,
+			costPerItem,
 			segment,
-			colors,
 			isNew,
-			onSale,
 			categoryId,
+			variants,
 		} = request.body;
 		const category = await prisma.category.findUnique({
 			where: { id: String(categoryId) },
@@ -90,37 +90,28 @@ const createProduct = asyncHandler(
 				data: {
 					name,
 					description,
-					image,
-					price,
+					sellingPrice,
+					crossedPrice,
+					costPerItem,
 					segment,
 					isNew,
-					onSale,
 					category: {
 						connect: {
 							id: categoryId!,
 						},
 					},
 
-					colors: {
-						create: colors.map((color) => ({
-							color: color.color,
-							hexColor: color.hexColor,
-							image: color.image,
-							sizes: {
-								create: color.sizes.map((size) => ({
-									size: size.size,
-									stock: size.stock,
-								})),
-							},
+					variants: {
+						create: variants.map((variant) => ({
+							color: variant.color,
+							image: variant.image,
+							size: variant.size,
+							stock: variant.stock,
 						})),
 					},
 				},
 				include: {
-					colors: {
-						include: {
-							sizes: true,
-						},
-					},
+					variants: true,
 				},
 			});
 			response.status(201).json(newProduct);
@@ -139,7 +130,7 @@ const updateProduct = asyncHandler(
 		request: Request<{ id: string }, {}, Product>,
 		response: Response
 	) => {
-		const { name, description, image, price, segment, categoryId } =
+		const { name, description, sellingPrice, segment, categoryId } =
 			request.body;
 		const product = await prisma.product.findUnique({
 			where: { id: String(request.params.id) },
@@ -156,8 +147,7 @@ const updateProduct = asyncHandler(
 				data: {
 					name,
 					description,
-					image,
-					price,
+					sellingPrice,
 					segment,
 					category: {
 						connect: {
