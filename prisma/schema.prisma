@@ -80,6 +80,7 @@ model Product {
 model Variant {
   id        String @id @default(uuid())
   color     String
+  hexColor  String @default("")
   size      String
   image     String
   stock     Int    @default(10)

@@ -104,6 +104,7 @@ const createProduct = asyncHandler(
 					variants: {
 						create: variants.map((variant) => ({
 							color: variant.color,
+							hexColor: variant.hexColor,
 							image: variant.image,
 							size: variant.size,
 							stock: variant.stock,
