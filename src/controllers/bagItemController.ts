@@ -16,7 +16,7 @@ const getBagItems = asyncHandler(
 				product: {
 					select: {
 						name: true,
-						// variants: true,
+						variants: true,
 					},
 				},
 			},
