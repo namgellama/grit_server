@@ -11,6 +11,7 @@ import dashboardRoutes from "./routes/dashboardRoutes";
 import orderRoutes from "./routes/orderRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import productRoutes from "./routes/productRoutes";
+import searchRoutes from "./routes/searchRoutes";
 import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use("/api/bagItems", bagItemRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/search", searchRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
