@@ -89,7 +89,7 @@ const getMostSoldProducts = asyncHandler(
 	async (request: Request, response: Response) => {
 		const productsData: Product[] = await prisma.$queryRaw`
 			SELECT 
-			p.id, p.name, COUNT(oi.quantity) "quantity", p.price * COUNT(oi.quantity) "amount"
+			p.id, p.name, COUNT(oi.quantity) "quantity", p."sellingPrice" * COUNT(oi.quantity) "amount"
 			FROM "Product" p 
 			JOIN "OrderItem" oi 
 			ON p.id = oi."productId" 
