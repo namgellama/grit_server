@@ -26,6 +26,46 @@ const getProducts = asyncHandler(
 				segment,
 				isNew,
 			},
+			select: {
+				id: true,
+				name: true,
+				description: true,
+				sellingPrice: true,
+				crossedPrice: true,
+				segment: true,
+				isNew: true,
+				createdAt: true,
+				updatedAt: true,
+				category: {
+					select: {
+						name: true,
+					},
+				},
+				variants: true,
+			},
+		});
+
+		response.status(200).json(products);
+	}
+);
+
+// @desc Get all products
+// @route GET /api/products/admin
+// @access Private / Admin
+const getProductsAdmin = asyncHandler(
+	async (request: Request<{}, {}, {}, SearchParams>, response: Response) => {
+		const { segment: segmentParam, isNew } = request.query;
+		const segments = Object.values(Segment);
+
+		const segment = segments.find(
+			(segment) => segment.toLowerCase() === segmentParam?.toLowerCase()
+		);
+
+		const products = await prisma.product.findMany({
+			where: {
+				segment,
+				isNew,
+			},
 			include: {
 				category: {
 					select: {
@@ -44,6 +84,40 @@ const getProducts = asyncHandler(
 // @route GET /api/products/:id
 // @access Public
 const getProduct = asyncHandler(
+	async (request: Request<{ id: string }>, response: Response) => {
+		const product = await prisma.product.findUnique({
+			where: { id: String(request.params.id) },
+			select: {
+				id: true,
+				name: true,
+				description: true,
+				sellingPrice: true,
+				crossedPrice: true,
+				segment: true,
+				isNew: true,
+				createdAt: true,
+				updatedAt: true,
+				category: {
+					select: {
+						name: true,
+					},
+				},
+				variants: true,
+			},
+		});
+
+		if (product) response.status(200).json(product);
+		else {
+			response.status(404);
+			throw new Error("Product not found");
+		}
+	}
+);
+
+// @desc Get a single product
+// @route GET /api/products/:id/admin
+// @access Private / Admin
+const getProductAdmin = asyncHandler(
 	async (request: Request<{ id: string }>, response: Response) => {
 		const product = await prisma.product.findUnique({
 			where: { id: String(request.params.id) },
@@ -185,4 +259,12 @@ const deleteProduct = asyncHandler(
 	}
 );
 
-export { createProduct, deleteProduct, getProduct, getProducts, updateProduct };
+export {
+	createProduct,
+	deleteProduct,
+	getProduct,
+	getProducts,
+	getProductsAdmin,
+	getProductAdmin,
+	updateProduct,
+};
