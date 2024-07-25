@@ -1,4 +1,4 @@
-import { Product, Segment } from "@prisma/client";
+import { Segment } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../../prisma/client";
 import asyncHandler from "../middlewares/asyncHandler";
@@ -86,7 +86,7 @@ const getProductsAdmin = asyncHandler(
 const getProduct = asyncHandler(
 	async (request: Request<{ id: string }>, response: Response) => {
 		const product = await prisma.product.findUnique({
-			where: { id: String(request.params.id) },
+			where: { id: request.params.id },
 			select: {
 				id: true,
 				name: true,
@@ -120,7 +120,7 @@ const getProduct = asyncHandler(
 const getProductAdmin = asyncHandler(
 	async (request: Request<{ id: string }>, response: Response) => {
 		const product = await prisma.product.findUnique({
-			where: { id: String(request.params.id) },
+			where: { id: request.params.id },
 			include: {
 				category: {
 					select: {
@@ -144,17 +144,7 @@ const getProductAdmin = asyncHandler(
 // @access Private/Admin
 const createProduct = asyncHandler(
 	async (request: Request<{}, {}, ProductRequestDTO>, response: Response) => {
-		const {
-			name,
-			description,
-			sellingPrice,
-			crossedPrice,
-			costPerItem,
-			segment,
-			isNew,
-			categoryId,
-			variants,
-		} = request.body;
+		const { categoryId, variants } = request.body;
 		const category = await prisma.category.findUnique({
 			where: { id: String(categoryId) },
 		});
@@ -162,19 +152,7 @@ const createProduct = asyncHandler(
 		if (category) {
 			const newProduct = await prisma.product.create({
 				data: {
-					name,
-					description,
-					sellingPrice,
-					crossedPrice,
-					costPerItem,
-					segment,
-					isNew,
-					category: {
-						connect: {
-							id: categoryId!,
-						},
-					},
-
+					...request.body,
 					variants: {
 						create: variants.map((variant) => ({
 							color: variant.color,
@@ -202,16 +180,16 @@ const createProduct = asyncHandler(
 // @access Private/Admin
 const updateProduct = asyncHandler(
 	async (
-		request: Request<{ id: string }, {}, Product>,
+		request: Request<{ id: string }, {}, ProductRequestDTO>,
 		response: Response
 	) => {
-		const { name, description, sellingPrice, segment, categoryId } =
-			request.body;
+		const { categoryId, variants } = request.body;
+
 		const product = await prisma.product.findUnique({
-			where: { id: String(request.params.id) },
+			where: { id: request.params.id },
 		});
 		const category = await prisma.category.findUnique({
-			where: { id: String(categoryId) },
+			where: { id: categoryId },
 		});
 
 		if (product && category) {
@@ -220,15 +198,22 @@ const updateProduct = asyncHandler(
 					id: request.params.id,
 				},
 				data: {
-					name,
-					description,
-					sellingPrice,
-					segment,
-					category: {
-						connect: {
-							id: categoryId!,
+					...request.body,
+					variants: {
+						deleteMany: {
+							productId: request.params.id,
 						},
+						create: variants.map((variant) => ({
+							color: variant.color,
+							hexColor: variant.hexColor,
+							image: variant.image,
+							size: variant.size,
+							stock: variant.stock,
+						})),
 					},
+				},
+				include: {
+					variants: true,
 				},
 			});
 			response.status(200).json(product);
@@ -245,7 +230,7 @@ const updateProduct = asyncHandler(
 const deleteProduct = asyncHandler(
 	async (request: Request<{ id: string }>, response: Response) => {
 		const product = await prisma.product.findUnique({
-			where: { id: String(request.params.id) },
+			where: { id: request.params.id },
 		});
 
 		if (product) {
@@ -263,8 +248,8 @@ export {
 	createProduct,
 	deleteProduct,
 	getProduct,
+	getProductAdmin,
 	getProducts,
 	getProductsAdmin,
-	getProductAdmin,
 	updateProduct,
 };
