@@ -35,7 +35,6 @@ const getOrders = asyncHandler(async (request: Request, response: Response) => {
 				select: {
 					id: true,
 					name: true,
-					phoneNumber: true,
 					email: true,
 				},
 			},
@@ -192,8 +191,8 @@ const createOrder = asyncHandler(
 						amount: payment.amount,
 						method: payment.method,
 						status:
-							payment.method === "CASH"
-								? "PENDING"
+							payment.method === "Cash"
+								? "Pending"
 								: payment.status,
 					},
 				},

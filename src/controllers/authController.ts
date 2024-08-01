@@ -11,8 +11,7 @@ import {
 interface LoginResponseDTO {
 	id: string;
 	name: string;
-	email?: string;
-	phoneNumber: string;
+	email: string;
 	token: string;
 	role: string;
 }
@@ -22,17 +21,16 @@ interface LoginResponseDTO {
 // @access Public
 const registerUser = asyncHandler(
 	async (request: Request<{}, {}, User>, response: Response) => {
-		const { email, phoneNumber, name, password } = request.body;
+		const { email, name, password } = request.body;
 
 		const user = await prisma.user.findFirst({
-			where: { OR: [{ email }, { phoneNumber }] },
+			where: { email },
 		});
 
 		if (!user) {
 			const newUser = await prisma.user.create({
 				data: {
 					name,
-					phoneNumber,
 					email,
 					password: await hashPassword(password),
 				},
@@ -54,19 +52,18 @@ const loginUser = asyncHandler(
 		request: Request<{}, {}, User>,
 		response: Response<LoginResponseDTO>
 	) => {
-		const { phoneNumber, password } = request.body;
+		const { email, password } = request.body;
 
-		const user = await prisma.user.findUnique({ where: { phoneNumber } });
+		const user = await prisma.user.findUnique({ where: { email } });
 
 		if (user && (await verifyPassword(password, user.password))) {
 			const token = generateToken(response, user.id);
-			const { id, name, phoneNumber, email, role } = user;
+			const { id, name, email, role } = user;
 
 			response.status(200).json({
 				id,
 				name,
-				phoneNumber,
-				email: email ?? "",
+				email,
 				role,
 				token,
 			});

@@ -14,8 +14,9 @@ datasource db {
 }
 
 enum Segment {
-  MEN
-  WOMEN
+  Men
+  Women
+  Unisex
 }
 
 enum Role {
@@ -23,28 +24,23 @@ enum Role {
   Customer
 }
 
-enum AddressType {
-  UserAddress
-  DeliveryAddress
-}
-
 enum OrderStatus {
-  PENDING
-  SHIPPED
-  DELIVERED
-  CANCELLED
+  Pending
+  Shipped
+  Delivered
+  Cancelled
 }
 
 enum PaymentMethod {
-  CASH
-  ESEWA
+  Cash
+  Esewa
 }
 
 enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
+  Pending
+  Completed
+  Failed
+  Refunded
 }
 
 model Category {
@@ -64,7 +60,7 @@ model Product {
   sellingPrice Int         @default(0)
   crossedPrice Int         @default(0)
   costPerItem  Int         @default(0)
-  segment      Segment     @default(MEN)
+  segment      Segment     @default(Men)
   isNew        Boolean     @default(true)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
@@ -89,14 +85,13 @@ model Variant {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  name        String   @db.VarChar(255)
-  email       String?  @unique
-  phoneNumber String   @unique @default("") @db.VarChar(10)
-  password    String
-  role        Role     @default(Customer)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(255)
+  email     String   @unique
+  password  String
+  role      Role     @default(Customer)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   orders   Order[]
   bagItems BagItem[]
@@ -109,6 +104,7 @@ model Address {
   city         String  @db.VarChar(50)
   postalCode   String? @db.VarChar(10)
   country      String  @default("Nepal") @db.VarChar(50)
+  phoneNumber  String  @unique @default("") @db.VarChar(10)
 
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String @unique
@@ -151,7 +147,7 @@ model Order {
   subTotal       Int         @default(0)
   deliveryCharge Int         @default(0)
   total          Int         @default(0)
-  status         OrderStatus @default(PENDING)
+  status         OrderStatus @default(Pending)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -165,8 +161,8 @@ model Order {
 model Payment {
   id        String        @id @default(uuid())
   amount    Int
-  method    PaymentMethod @default(CASH)
-  status    PaymentStatus @default(PENDING)
+  method    PaymentMethod @default(Cash)
+  status    PaymentStatus @default(Pending)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 

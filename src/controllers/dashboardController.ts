@@ -23,7 +23,7 @@ const getKPIData = asyncHandler(
 				amount: true,
 			},
 			where: {
-				status: "COMPLETED",
+				status: "Completed",
 			},
 		});
 
@@ -31,7 +31,7 @@ const getKPIData = asyncHandler(
 			_count: true,
 			where: {
 				status: {
-					not: "CANCELLED",
+					not: "Cancelled",
 				},
 			},
 		});
