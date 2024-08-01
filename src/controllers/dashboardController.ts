@@ -63,7 +63,7 @@ const getRevenueByMonth = asyncHandler(
 			FROM 
 			"Payment"
 			WHERE 
-			"status" = 'COMPLETED' 
+			"status" = 'Completed' 
 			AND EXTRACT(YEAR FROM "updatedAt") = EXTRACT(YEAR FROM CURRENT_DATE)
 			GROUP BY 
 			DATE_TRUNC('month', "updatedAt")

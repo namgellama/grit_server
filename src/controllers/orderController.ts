@@ -184,6 +184,7 @@ const createOrder = asyncHandler(
 						addressLine2: address.addressLine2,
 						city: address.city,
 						postalCode: address.postalCode,
+						phoneNumber: address.phoneNumber,
 					},
 				},
 				payment: {

@@ -27,8 +27,7 @@ const getMyLastOrderAddress = asyncHandler(
 				throw new Error("Address not found");
 			}
 		} else {
-			response.status(404);
-			throw new Error("Order not found");
+			response.json(null);
 		}
 	}
 );

@@ -25,7 +25,6 @@ const protect = asyncHandler(
 						id: true,
 						email: true,
 						name: true,
-						phoneNumber: true,
 						role: true,
 					},
 				});
