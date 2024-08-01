@@ -6,7 +6,6 @@ async function main() {
 		data: {
 			name: "admin",
 			email: "gritnp@gmail.com",
-			phoneNumber: "9849418950",
 			password: bcrypt.hashSync("admin", 10),
 			role: "Admin",
 		},
