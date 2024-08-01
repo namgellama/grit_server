@@ -54,7 +54,7 @@ const getProducts = asyncHandler(
 // @access Private / Admin
 const getProductsAdmin = asyncHandler(
 	async (request: Request<{}, {}, {}, SearchParams>, response: Response) => {
-		const { segment: segmentParam, isNew, skip, take } = request.query;
+		const { segment: segmentParam, isNew } = request.query;
 		const segments = Object.values(Segment);
 
 		const segment = segments.find(
@@ -74,8 +74,6 @@ const getProductsAdmin = asyncHandler(
 				},
 				variants: true,
 			},
-			skip: skip ? parseInt(skip) : undefined,
-			take: take ? parseInt(take) : undefined,
 		});
 
 		response.status(200).json(products);
