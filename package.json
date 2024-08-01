@@ -9,7 +9,7 @@
 		"dev": "nodemon ./src/index.ts"
 	},
 	"prisma": {
-		"seed": "ts-node prisma/seed.ts"
+		"seed": "ts-node src/seed.ts"
 	},
 	"keywords": [],
 	"author": "",
