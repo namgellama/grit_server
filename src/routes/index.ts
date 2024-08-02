@@ -1,0 +1,10 @@
+export { default as addressRoutes } from "./addressRoutes";
+export { default as authRoutes } from "./authRoutes";
+export { default as bagItemRoutes } from "./bagItemRoutes";
+export { default as categoryRoutes } from "./categoryRoutes";
+export { default as dashboardRoutes } from "./dashboardRoutes";
+export { default as orderRoutes } from "./orderRoutes";
+export { default as paymentRoutes } from "./paymentRoutes";
+export { default as productRoutes } from "./productRoutes";
+export { default as searchRoutes } from "./searchRoutes";
+export { default as userRoutes } from "./userRoutes";

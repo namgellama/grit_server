@@ -3,16 +3,18 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import { errorHandler, notFound } from "./middlewares/errorMiddleware";
-import addressRoutes from "./routes/addressRoutes";
-import authRoutes from "./routes/authRoutes";
-import bagItemRoutes from "./routes/bagItemRoutes";
-import categoryRoutes from "./routes/categoryRoutes";
-import dashboardRoutes from "./routes/dashboardRoutes";
-import orderRoutes from "./routes/orderRoutes";
-import paymentRoutes from "./routes/paymentRoutes";
-import productRoutes from "./routes/productRoutes";
-import searchRoutes from "./routes/searchRoutes";
-import userRoutes from "./routes/userRoutes";
+import {
+	addressRoutes,
+	authRoutes,
+	bagItemRoutes,
+	categoryRoutes,
+	dashboardRoutes,
+	orderRoutes,
+	paymentRoutes,
+	productRoutes,
+	searchRoutes,
+	userRoutes,
+} from "./routes";
 
 dotenv.config();
 
