@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import asyncHandler from "./asyncHandler";
-import prisma from "../../prisma/client";
+import prisma from "../client";
 
 interface ExtendedJwtPayload extends JwtPayload {
 	userId: string;

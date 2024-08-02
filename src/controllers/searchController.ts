@@ -1,5 +1,5 @@
 import asyncHandler from "../middlewares/asyncHandler";
-import prisma from "../../prisma/client";
+import prisma from "../client";
 import { Request, response, Response } from "express";
 
 interface SearchParams {

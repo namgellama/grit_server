@@ -1,6 +1,6 @@
 import { BagItem } from "@prisma/client";
 import { Request, Response } from "express";
-import prisma from "../../prisma/client";
+import prisma from "../client";
 import asyncHandler from "../middlewares/asyncHandler";
 
 // @desc Get all bagItems of logged in user

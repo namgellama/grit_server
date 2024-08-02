@@ -1,4 +1,4 @@
-import prisma from "../prisma/client";
+import prisma from "./client";
 import bcrypt from "bcryptjs";
 
 async function main() {

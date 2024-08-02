@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import asyncHandler from "../middlewares/asyncHandler";
-import prisma from "../../prisma/client";
+import prisma from "../client";
 import { PaymentStatus } from "@prisma/client";
 
 const updatePayment = asyncHandler(

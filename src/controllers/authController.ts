@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 import { Request, Response } from "express";
-import prisma from "../../prisma/client";
+import prisma from "../client";
 import asyncHandler from "../middlewares/asyncHandler";
 import {
 	generateToken,
