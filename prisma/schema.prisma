@@ -104,7 +104,7 @@ model Address {
   city         String  @db.VarChar(50)
   postalCode   String? @db.VarChar(10)
   country      String  @default("Nepal") @db.VarChar(50)
-  phoneNumber  String  @unique @default("") @db.VarChar(10)
+  phoneNumber  String  @default("") @db.VarChar(10)
 
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String @unique
