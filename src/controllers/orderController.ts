@@ -162,45 +162,83 @@ const createOrder = asyncHandler(
 			payment,
 		} = request.body;
 
-		const newOrder = await prisma.order.create({
-			data: {
-				subTotal,
-				deliveryCharge,
-				total,
-				orderItems: {
-					create: orderItems.map((orderItem: OrderItem) => ({
-						productId: orderItem.productId,
-						quantity: orderItem.quantity,
-						unitPrice: orderItem.unitPrice,
-						unitTotalPrice: orderItem.unitTotalPrice,
-						size: orderItem.size,
-						color: orderItem.color,
-					})),
-				},
-				userId: request.user?.id,
-				address: {
-					create: {
-						addressLine1: address.addressLine1,
-						addressLine2: address.addressLine2,
-						city: address.city,
-						postalCode: address.postalCode,
-						phoneNumber: address.phoneNumber,
+		try {
+			const newOrder = await prisma.$transaction(async (prisma) => {
+				// Create the order
+				const createdOrder = await prisma.order.create({
+					data: {
+						subTotal,
+						deliveryCharge,
+						total,
+						orderItems: {
+							create: orderItems.map((orderItem: OrderItem) => ({
+								productId: orderItem.productId,
+								quantity: orderItem.quantity,
+								unitPrice: orderItem.unitPrice,
+								unitTotalPrice: orderItem.unitTotalPrice,
+								size: orderItem.size,
+								color: orderItem.color,
+							})),
+						},
+						userId: request.user?.id,
+						address: {
+							create: {
+								addressLine1: address.addressLine1,
+								addressLine2: address.addressLine2,
+								city: address.city,
+								postalCode: address.postalCode,
+								phoneNumber: address.phoneNumber,
+							},
+						},
+						payment: {
+							create: {
+								amount: payment.amount,
+								method: payment.method,
+								status:
+									payment.method === "Cash"
+										? "Pending"
+										: payment.status,
+							},
+						},
 					},
-				},
-				payment: {
-					create: {
-						amount: payment.amount,
-						method: payment.method,
-						status:
-							payment.method === "Cash"
-								? "Pending"
-								: payment.status,
-					},
-				},
-			},
-		});
+				});
 
-		response.status(201).json(newOrder);
+				await Promise.all(
+					orderItems.map(async (orderItem: OrderItem) => {
+						const variant = await prisma.variant.findFirst({
+							where: {
+								color: orderItem.color,
+								size: orderItem.size,
+								productId: orderItem.productId ?? "",
+							},
+						});
+
+						if (variant) {
+							await prisma.variant.update({
+								where: {
+									id: variant.id,
+								},
+								data: {
+									stock: {
+										decrement: orderItem.quantity,
+									},
+								},
+							});
+						} else {
+							throw new Error(
+								`Variant not found for color: ${orderItem.color}, size: ${orderItem.size}, productId: ${orderItem.productId}`
+							);
+						}
+					})
+				);
+
+				return createdOrder;
+			});
+
+			response.status(201).json(newOrder);
+		} catch (error) {
+			throw new Error("An unexpected error has occurred");
+		}
 	}
 );
 
